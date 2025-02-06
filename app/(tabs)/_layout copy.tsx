@@ -1,13 +1,14 @@
 
 import React from 'react';
-import Welcome from './(tabs)/welcome';
-import UserAuth from './(tabs)/user-auth';
-import WorkoutContainer from './(tabs)/workout-container';
-import PreviousRecords from './(tabs)/previous-records';
-import CreateExercise from './(tabs)/create-exercise';
-import LogExercise from './(tabs)/log-exercise';
+
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, NavigationIndependentTree } from '@react-navigation/native';
+import CreateExercise from './create-exercise';
+import LogExercise from './log-exercise';
+import PreviousRecords from './previous-records';
+import UserAuth from './user-auth';
+import Welcome from './welcome';
+import WorkoutContainer from './workout-container';
 
 const Stack = createStackNavigator();
 
