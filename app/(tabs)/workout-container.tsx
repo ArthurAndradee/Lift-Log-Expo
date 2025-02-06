@@ -10,10 +10,10 @@ const WorkoutContainer = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Escolha uma opção</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LogExisting')}>
         <Text style={styles.buttonText}>Adicionar a um exercício existente</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LogNew')}>
         <Text style={styles.buttonText}>Adicionar a um novo exercício</Text>
       </TouchableOpacity>
@@ -32,14 +32,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 40,
+    color: '#333',
+    textAlign: 'center',
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#3b5391',  // Blue for regular buttons
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     borderRadius: 8,
-    marginVertical: 10,
+    marginVertical: 15,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',

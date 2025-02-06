@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    color: '#555',
+    color: '#f8f8f8',
     marginTop: 5,
   },
   deleteButton: {

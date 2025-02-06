@@ -48,7 +48,7 @@ const CreateExercise = () => {
       setSetWeight(0);
       setSetReps(0);
       Alert.alert('Sucesso', 'Treino registrado com sucesso!');
-      navigation.navigate('Welcome'); 
+      navigation.navigate('Welcome');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');
     }
@@ -118,11 +118,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#333',
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
+    color: '#333',
   },
   input: {
     height: 40,
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#3b5391',
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',

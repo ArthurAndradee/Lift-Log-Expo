@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#333',
   },
   picker: {
     height: 50,
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#3b5391', // Updated to the specified color
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',

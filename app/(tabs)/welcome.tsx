@@ -17,12 +17,14 @@ const Welcome = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('WorkoutContainer')}>
-        <Text style={styles.link}>Registrar treino</Text>
+      <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('WorkoutContainer')}>
+        <Text style={styles.linkText}>Registrar treino</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('PreviousRecords')}>
-        <Text style={styles.link}>Ver treinos anteriores</Text>
+
+      <TouchableOpacity style={styles.linkButton} onPress={() => navigation.navigate('PreviousRecords')}>
+        <Text style={styles.linkText}>Ver treinos anteriores</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
@@ -38,17 +40,39 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     paddingHorizontal: 20,
   },
-  link: {
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 40,
+    color: '#333',
+    textAlign: 'center',
+  },
+  linkButton: {
+    backgroundColor: '#3b5391',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+  },
+  linkText: {
     fontSize: 18,
-    color: '#007BFF',
-    marginBottom: 15,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   logoutButton: {
     backgroundColor: '#dc3545',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 30,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',

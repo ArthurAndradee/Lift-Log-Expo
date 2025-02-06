@@ -148,14 +148,14 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: 'bold' },
   datePickerContainer: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10 },
   dateButton: {
-    backgroundColor: '#7b7b7b',
+    backgroundColor: '#3b5391',
     padding: 10,
     borderRadius: 5,
     flex: 1,
     alignItems: 'center',
     marginHorizontal: 5,
   },
-  dateText: { fontSize: 16, color: '#f7f7f7' },
+  dateText: { fontSize: 16, color: '#fff' },
 });
 
 export default ExerciseSets;
