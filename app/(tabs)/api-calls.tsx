@@ -57,7 +57,6 @@ export const logWorkout = async (exercise: string, sets: Set[]) => {
         Authorization: `Bearer ${token}` 
       } }
     );
-    alert('Workout logged');
     return { logged: true };
   } catch (error) {
     console.error('Failed to log workout:', error);

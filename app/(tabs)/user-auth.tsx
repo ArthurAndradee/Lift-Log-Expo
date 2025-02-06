@@ -40,7 +40,6 @@ const UserAuth = () => {
   const handleRegister = async () => {
     try {
       await axios.post('http://10.0.2.2:5000/api/users/register', { username, password });
-      Alert.alert('Success', 'Registered successfully');
     } catch (err) {
       console.error('Registration failed:', err);
       Alert.alert('Error', 'Registration failed');

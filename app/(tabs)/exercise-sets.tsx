@@ -25,7 +25,6 @@ const ExerciseSets = () => {
   const handleDeleteWorkout = async (workoutId: number) => {
     const isDeleted = await deleteWorkout(workoutId);
     if (isDeleted) {
-      Alert.alert('Success', 'Workout deleted successfully');
       fetchPreviousRecords(exercise, setPreviousRecord);
     } else {
       Alert.alert('Error', 'Failed to delete workout');
@@ -63,11 +62,13 @@ const ExerciseSets = () => {
   }, {} as Record<number, { workoutId: number, date: string, records: WorkoutRecord[] }>);
 
   // Convert grouped records into a format suitable for SectionList
-  const sections = Object.keys(groupedRecords).map((key) => ({
+  const sections = Object.keys(groupedRecords)
+  .map((key) => ({
     title: groupedRecords[+key].date,
     data: groupedRecords[+key].records,
     workoutId: +key,
-  }));
+  }))
+  .reverse(); // This reverses the order of the sections
 
   return (
     <View style={styles.container}>

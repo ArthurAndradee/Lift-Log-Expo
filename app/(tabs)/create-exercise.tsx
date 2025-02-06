@@ -40,14 +40,12 @@ const CreateExercise = () => {
 
   const handleLogWorkout = async () => {
     const result = await logWorkout(exercise, sets);
-    console.log("Errooooo");
 
     if (result.logged) {
       setExercise('');
       setSets([]);
       setSetWeight(0);
       setSetReps(0);
-      Alert.alert('Sucesso', 'Treino registrado com sucesso!');
       navigation.navigate('Welcome');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');

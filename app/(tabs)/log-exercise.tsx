@@ -48,7 +48,6 @@ const LogExercise = () => {
       setSets([]);
       setSetWeight(0);
       setSetReps(0);
-      Alert.alert('Sucesso', 'Treino registrado com sucesso!');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');
     }

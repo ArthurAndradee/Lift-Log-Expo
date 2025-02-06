@@ -52,7 +52,6 @@ const PreviousRecords = () => {
   const handleDeleteWorkout = async (workoutId: number) => {
     const isDeleted = await deleteWorkout(workoutId);
     if (isDeleted) {
-      Alert.alert('Sucesso', 'Treino deletado com sucesso');
       fetchPreviousRecords(activeRecordExercise, setPreviousRecord);
     } else {
       Alert.alert('Erro', 'Falha ao deletar treino');
