@@ -1,15 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { fetchExercises, fetchPreviousRecords, deleteWorkout } from './api-calls';
-import { RootStackParamList, WorkoutRecord } from './interfaces'
+import { fetchExercises } from '../api-calls';
+import { RootStackParamList } from '../interfaces'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 
 const PreviousRecords = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [activeRecordExercise, setActiveRecordExercise] = useState<string>('');
-  const [previousRecord, setPreviousRecord] = useState<WorkoutRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
@@ -46,27 +44,18 @@ const PreviousRecords = () => {
   }, [searchQuery, availableExercises]);
 
   const handleExerciseSelection = async (exercise: string) => {
-    navigation.navigate('ExerciseSets', { exercise });
-  };
-
-  const handleDeleteWorkout = async (workoutId: number) => {
-    const isDeleted = await deleteWorkout(workoutId);
-    if (isDeleted) {
-      fetchPreviousRecords(activeRecordExercise, setPreviousRecord);
-    } else {
-      Alert.alert('Erro', 'Falha ao deletar treino');
-    }
+    navigation.navigate('exerciseSets', { exercise });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Search for previous workouts</Text>
+      <Text style={styles.title}>Pesquise por treinos anteriores</Text>
 
       <TextInput
         style={styles.input}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search for an exercise"
+        placeholder="Pesquise por um exercício"
       />
 
       <FlatList
@@ -77,7 +66,7 @@ const PreviousRecords = () => {
             <Text style={styles.exerciseText}>{item}</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={<Text style={styles.noResults}>No exercises found.</Text>}
+        ListEmptyComponent={<Text style={styles.noResults}>Nenhum exercício encontrado</Text>}
       />
     </View>
   );

@@ -72,13 +72,13 @@ const ExerciseSets = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Previous Records for {exercise}</Text>
+      <Text style={styles.title}>Registros de {exercise}</Text>
 
       {/* Date Pickers */}
       <View style={styles.datePickerContainer}>
         <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartDatePicker(true)}>
           <Text style={styles.dateText}>
-            {startDate ? startDate.toLocaleDateString() : 'Select Start Date'}
+            {startDate ? startDate.toLocaleDateString() : 'Data inicial'}
           </Text>
         </TouchableOpacity>
 
@@ -93,7 +93,7 @@ const ExerciseSets = () => {
 
         <TouchableOpacity style={styles.dateButton} onPress={() => setShowEndDatePicker(true)}>
           <Text style={styles.dateText}>
-            {endDate ? endDate.toLocaleDateString() : 'Select End Date'}
+            {endDate ? endDate.toLocaleDateString() : 'Data final'}
           </Text>
         </TouchableOpacity>
 
@@ -110,27 +110,32 @@ const ExerciseSets = () => {
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.workoutId.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.recordItem}>
-            <Text style={styles.recordText}>
-              <Text style={styles.bold}>{item.exercise}</Text> - Set {item.setNumber}, 
-              Weight: {item.weight} kgs, 
-              {item.reps !== null ? ` Reps: ${item.reps}` : ' Reps: N/A'}
-            </Text>
+        renderItem={({ item, index, section }) => (
+          <View>
+            <View style={styles.recordItem}>
+              <Text style={styles.recordText}>
+                <Text style={styles.bold}>Set {item.setNumber} - </Text> 
+                Peso: <Text style={styles.bold}>{item.weight}</Text> kg | 
+                {item.reps !== null ? ` Reps: ${item.reps}` : ' Reps: N/A'}
+              </Text>
+            </View>
+        
+            {index === section.data.length - 1 && (
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteWorkout(section.workoutId)}
+              >
+                <Text style={styles.deleteButtonText}>Deletar Sets</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDeleteWorkout(section.workoutId)}
-            >
-              <Text style={styles.deleteButtonText}>Delete Sets</Text>
-            </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.noResults}>No records found for this exercise.</Text>}
+        ListEmptyComponent={<Text style={styles.noResults}>Nenhum registro encontrado</Text>}
       />
     </View>
   );

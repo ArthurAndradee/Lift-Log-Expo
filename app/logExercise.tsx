@@ -1,22 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { RootStackParamList, Set } from './interfaces';
-import { addSet, logWorkout } from './api-calls';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Set } from './interfaces';
+import { addSet, fetchExercises, logWorkout } from './api-calls';
+import { Picker } from '@react-native-picker/picker';
 
-const CreateExercise = () => {
+const LogExercise = () => {
   const [exercise, setExercise] = useState('');
   const [setReps, setSetReps] = useState(0);
   const [setWeight, setSetWeight] = useState(0);
   const [sets, setSets] = useState<Set[]>([]);
+  const [availableExercises, setAvailableExercises] = useState<string[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
-  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
-    const fetchUserId = async () => {
+    const fetchUserData = async () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         try {
@@ -28,7 +26,12 @@ const CreateExercise = () => {
       }
     };
 
-    fetchUserId();
+    const loadExercises = async () => {
+      await fetchExercises(setAvailableExercises);
+    };
+
+    fetchUserData();
+    loadExercises();
   }, []);
 
   const handleAddSet = () => {
@@ -40,13 +43,11 @@ const CreateExercise = () => {
 
   const handleLogWorkout = async () => {
     const result = await logWorkout(exercise, sets);
-
     if (result.logged) {
       setExercise('');
       setSets([]);
       setSetWeight(0);
       setSetReps(0);
-      navigation.navigate('Welcome');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');
     }
@@ -54,14 +55,18 @@ const CreateExercise = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Adicionar Novo Exercício</Text>
+      <Text style={styles.title}>Adicionar a um Exercício Existente</Text>
 
-      <TextInput
-        style={styles.input}
-        value={exercise}
-        onChangeText={setExercise}
-        placeholder="Nome do Exercício"
-      />
+      <Picker
+        selectedValue={exercise}
+        style={styles.picker}
+        onValueChange={(itemValue: React.SetStateAction<string>) => setExercise(itemValue)}
+      >
+        <Picker.Item label="Selecione um Exercício" value="" />
+        {availableExercises.map((ex, index) => (
+          <Picker.Item key={index} label={ex} value={ex} />
+        ))}
+      </Picker>
 
       <Text style={styles.label}>Peso (kg)</Text>
       <TextInput
@@ -81,13 +86,15 @@ const CreateExercise = () => {
         placeholder="Reps"
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleAddSet}>
-        <Text style={styles.buttonText}>Adicionar Série</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonBox}>
+        <TouchableOpacity style={styles.button} onPress={handleAddSet}>
+          <Text style={styles.buttonText}>Adicionar Série</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogWorkout}>
-        <Text style={styles.buttonText}>Registrar Treino</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogWorkout}>
+          <Text style={styles.buttonText}>Registrar Treino</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.title}>Séries Adicionadas:</Text>
       <FlatList
@@ -118,11 +125,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
   },
+  picker: {
+    height: 50,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#333',
   },
   input: {
     height: 40,
@@ -133,8 +147,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 10,
   },
+  buttonBox: {
+    marginTop: 10,
+    marginBottom: 15,
+  },
   button: {
-    backgroundColor: '#3b5391',
+    backgroundColor: '#3b5391', // Updated to the specified color
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',
@@ -170,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateExercise;
+export default LogExercise;

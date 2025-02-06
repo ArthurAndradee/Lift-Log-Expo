@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from './interfaces';
+import { RootStackParamList } from '../interfaces';
 
 const WorkoutContainer = () => {
   type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
@@ -10,11 +10,11 @@ const WorkoutContainer = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LogExisting')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('logExercise')}>
         <Text style={styles.buttonText}>Adicionar a um exercício existente</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LogNew')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createExercise')}>
         <Text style={styles.buttonText}>Adicionar a um novo exercício</Text>
       </TouchableOpacity>
     </View>

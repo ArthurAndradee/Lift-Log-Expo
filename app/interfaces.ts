@@ -15,11 +15,11 @@ export interface WorkoutRecord {
 }
 
 export type RootStackParamList = {
-  Login: undefined;
-  Welcome: undefined;
-  WorkoutContainer: undefined;
-  PreviousRecords: undefined;
-  LogExisting: undefined;
-  LogNew: undefined;
-  ExerciseSets: { exercise: string };
+  userAuth: undefined;
+  welcome: undefined;
+  previousRecords: undefined;
+  workoutContainer: undefined;
+  logExercise: undefined;
+  createExercise: undefined;
+  exerciseSets: { exercise: string };
 };
