@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { RootStackParamList, Set } from './interfaces';
+import { Set } from './interfaces';
 import { addSet, logWorkout } from './api-calls';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useRouter } from 'expo-router';
 
 const CreateExercise = () => {
   const [exercise, setExercise] = useState('');
@@ -12,9 +11,8 @@ const CreateExercise = () => {
   const [setWeight, setSetWeight] = useState(0);
   const [sets, setSets] = useState<Set[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
-  const navigation = useNavigation<HomeScreenNavigationProp>();
-
+  const router = useRouter();
+  
   useEffect(() => {
     const fetchUserId = async () => {
       const token = await AsyncStorage.getItem('token');
@@ -46,7 +44,7 @@ const CreateExercise = () => {
       setSets([]);
       setSetWeight(0);
       setSetReps(0);
-      navigation.navigate('welcome');
+      router.push('/workoutContainer');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');
     }
@@ -57,10 +55,11 @@ const CreateExercise = () => {
       <Text style={styles.title}>Adicionar Novo Exercício</Text>
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, sets.length > 0 && styles.disabledInput]}
         value={exercise}
         onChangeText={setExercise}
         placeholder="Nome do Exercício"
+        editable={sets.length === 0} // Disable if sets exist
       />
 
       <Text style={styles.label}>Peso (kg)</Text>
@@ -175,6 +174,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  disabledInput: {
+    backgroundColor: '#e0e0e0',
+    color: '#888',
+  },
+  
 });
 
 export default CreateExercise;

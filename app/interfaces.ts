@@ -15,7 +15,7 @@ export interface WorkoutRecord {
 }
 
 export type RootStackParamList = {
-  userAuth: undefined;
+  index: undefined;
   welcome: undefined;
   previousRecords: undefined;
   workoutContainer: undefined;
