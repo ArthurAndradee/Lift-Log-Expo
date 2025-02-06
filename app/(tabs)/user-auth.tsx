@@ -3,11 +3,14 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './interfaces';
 
 const UserAuth = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
     const checkToken = async () => {

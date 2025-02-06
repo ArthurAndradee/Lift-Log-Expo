@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './interfaces';
 
 const WorkoutContainer = () => {
-  const navigation = useNavigation();
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>

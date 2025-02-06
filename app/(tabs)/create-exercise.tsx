@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { Set } from './interfaces';
+import { RootStackParamList, Set } from './interfaces';
 import { addSet, logWorkout } from './api-calls';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const CreateExercise = () => {
   const [exercise, setExercise] = useState('');
@@ -11,7 +12,8 @@ const CreateExercise = () => {
   const [setWeight, setSetWeight] = useState(0);
   const [sets, setSets] = useState<Set[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-  const navigation = useNavigation();
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
     const fetchUserId = async () => {

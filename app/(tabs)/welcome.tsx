@@ -2,9 +2,12 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from './interfaces';
 
 const Welcome = () => {
-  const navigation = useNavigation();
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   
   const handleLogout = async () => {
     await AsyncStorage.removeItem('userId');

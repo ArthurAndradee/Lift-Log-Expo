@@ -13,3 +13,12 @@ export interface WorkoutRecord {
   workoutId: number;
   sets: Set[];
 }
+
+export type RootStackParamList = {
+  Login: undefined;
+  Welcome: undefined;
+  WorkoutContainer: undefined;
+  PreviousRecords: undefined;
+  LogExisting: undefined;
+  LogNew: undefined;
+};
