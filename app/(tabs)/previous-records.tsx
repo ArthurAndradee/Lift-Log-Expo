@@ -2,7 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { fetchExercises, fetchPreviousRecords, deleteWorkout } from './api-calls';
-import { WorkoutRecord } from './interfaces'
+import { RootStackParamList, WorkoutRecord } from './interfaces'
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from 'expo-router';
 
 const PreviousRecords = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
@@ -11,7 +13,9 @@ const PreviousRecords = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
-
+  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  
   useEffect(() => {
     const fetchUserId = async () => {
       const token = await AsyncStorage.getItem('token');
@@ -42,8 +46,7 @@ const PreviousRecords = () => {
   }, [searchQuery, availableExercises]);
 
   const handleExerciseSelection = async (exercise: string) => {
-    await fetchPreviousRecords(exercise, setPreviousRecord);
-    setActiveRecordExercise(exercise);
+    navigation.navigate('ExerciseSets', { exercise });
   };
 
   const handleDeleteWorkout = async (workoutId: number) => {
@@ -58,7 +61,7 @@ const PreviousRecords = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Pesquise por treinos anteriores</Text>
+      <Text style={styles.title}>Search for previous workouts</Text>
 
       <TextInput
         style={styles.input}
@@ -76,26 +79,6 @@ const PreviousRecords = () => {
           </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={styles.noResults}>No exercises found.</Text>}
-      />
-
-      <Text style={styles.title}>Registros anteriores</Text>
-      <FlatList
-        data={previousRecord}
-        keyExtractor={(item) => item.workoutId.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.recordItem}>
-            <Text style={styles.recordText}>
-              <Text style={styles.bold}>{item.exercise}</Text> - Série {item.setNumber}, 
-              Peso: {item.weight} kgs, 
-              {item.reps !== null ? ` Repetições: ${item.reps}` : ' Repetições: N/A'}
-            </Text>
-            <Text style={styles.dateText}>Registrado: {new Date(item.date).toLocaleString()}</Text>
-            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteWorkout(item.workoutId)}>
-              <Text style={styles.deleteButtonText}>Deletar</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={styles.noResults}>Registros não encontrados para esse exercício.</Text>}
       />
     </View>
   );

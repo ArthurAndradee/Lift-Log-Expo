@@ -21,4 +21,5 @@ export type RootStackParamList = {
   PreviousRecords: undefined;
   LogExisting: undefined;
   LogNew: undefined;
+  ExerciseSets: { exercise: string };
 };
