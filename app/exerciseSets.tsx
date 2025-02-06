@@ -51,24 +51,30 @@ const ExerciseSets = () => {
     return true;
   });
 
-  // Group records by workoutId and date
-  const groupedRecords = filteredRecords.reduce((acc, item) => {
-    const date = new Date(item.date).toLocaleDateString(); // Format date
-    if (!acc[item.workoutId]) {
-      acc[item.workoutId] = { workoutId: item.workoutId, date, records: [] };
-    }
-    acc[item.workoutId].records.push(item);
-    return acc;
-  }, {} as Record<number, { workoutId: number, date: string, records: WorkoutRecord[] }>);
+// Group records by workoutId and combine date with time
+const groupedRecords = filteredRecords.reduce((acc, item) => {
+  const dateObj = new Date(item.date);
+  const date = dateObj.toLocaleDateString(); 
+  // Format time as "HH:MM"
+  const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const dateTime = `${date} - ${time}`;
 
-  // Convert grouped records into a format suitable for SectionList
-  const sections = Object.keys(groupedRecords)
+  if (!acc[item.workoutId]) {
+    acc[item.workoutId] = { workoutId: item.workoutId, dateTime, records: [] };
+  }
+  acc[item.workoutId].records.push(item);
+  return acc;
+}, {} as Record<number, { workoutId: number, dateTime: string, records: WorkoutRecord[] }>);
+
+// Convert grouped records into a format suitable for SectionList
+const sections = Object.keys(groupedRecords)
   .map((key) => ({
-    title: groupedRecords[+key].date,
+    title: groupedRecords[+key].dateTime, // Combined date and time here
     data: groupedRecords[+key].records,
     workoutId: +key,
   }))
-  .reverse(); // This reverses the order of the sections
+  .reverse(); // Reverse the order of the sections if needed
+
 
   return (
     <View style={styles.container}>
@@ -130,11 +136,28 @@ const ExerciseSets = () => {
             )}
           </View>
         )}
-        renderSectionHeader={({ section }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-          </View>
-        )}
+        renderSectionHeader={({ section }) => {
+          const firstRecord = section.data[0]; // Get first record in the section
+          const recordDate = new Date(firstRecord.date);
+        
+          // Format Date as DD/MM/YYYY with leading zeros
+          const formattedDate = recordDate.toLocaleDateString('en-GB', { 
+            day: '2-digit', month: '2-digit', year: 'numeric' 
+          });
+        
+          // Format Time in 24-hour format (HH:mm)
+          const formattedTime = recordDate.toLocaleTimeString('en-GB', { 
+            hour: '2-digit', minute: '2-digit', hour12: false 
+          });
+        
+          return (
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{formattedDate}</Text>
+              <Text style={styles.sectionTime}>{formattedTime}</Text>
+            </View>
+          );
+        }}
+        
         ListEmptyComponent={<Text style={styles.noResults}>Nenhum registro encontrado</Text>}
       />
     </View>
@@ -150,8 +173,6 @@ const styles = StyleSheet.create({
   deleteButton: { backgroundColor: '#ff4d4d', paddingVertical: 8, borderRadius: 6, alignItems: 'center', marginTop: 10 },
   deleteButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
   noResults: { fontSize: 16, color: '#555', textAlign: 'center', marginTop: 10 },
-  sectionHeader: { backgroundColor: '#f0f0f0', paddingVertical: 10, paddingHorizontal: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold' },
   datePickerContainer: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 10 },
   dateButton: {
     backgroundColor: '#3b5391',
@@ -162,6 +183,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   dateText: { fontSize: 16, color: '#fff' },
+  sectionHeader: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    flexDirection: 'row', // Align items horizontally
+    justifyContent: 'space-between', // Space between date and time
+    alignItems: 'center', // Center vertically
+  },
+  
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  
+  sectionTime: {
+    fontSize: 16,
+    color: '#555',
+  },
 });
 
 export default ExerciseSets;

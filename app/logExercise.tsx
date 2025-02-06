@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from './interfaces';
 import { addSet, fetchExercises, logWorkout } from './api-calls';
-import { Picker } from '@react-native-picker/picker';
+import { MaterialIcons } from '@expo/vector-icons'; // Assuming you are using Expo for icons
 
 const LogExercise = () => {
   const [exercise, setExercise] = useState('');
@@ -12,6 +12,8 @@ const LogExercise = () => {
   const [sets, setSets] = useState<Set[]>([]);
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
+  const [filteredExercises, setFilteredExercises] = useState<string[]>([]); // New state for filtered exercises
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,20 +55,54 @@ const LogExercise = () => {
     }
   };
 
+  const handleSearchChange = (text: string) => {
+    setExercise(text);
+    if (text) {
+      const filtered = availableExercises.filter((ex) => ex.toLowerCase().includes(text.toLowerCase()));
+      setFilteredExercises(filtered);
+    } else {
+      setFilteredExercises([]);
+    }
+  };
+
+  // Validation function to check if the selected exercise is valid
+  const isExerciseValid = () => {
+    return availableExercises.includes(exercise.trim());
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Adicionar a um Exercício Existente</Text>
 
-      <Picker
-        selectedValue={exercise}
-        style={styles.picker}
-        onValueChange={(itemValue: React.SetStateAction<string>) => setExercise(itemValue)}
-      >
-        <Picker.Item label="Selecione um Exercício" value="" />
-        {availableExercises.map((ex, index) => (
-          <Picker.Item key={index} label={ex} value={ex} />
-        ))}
-      </Picker>
+      <View style={styles.searchBox}>
+        <TextInput
+          style={[styles.input, styles.flex1]}
+          value={exercise}
+          onChangeText={handleSearchChange}
+          placeholder="Pesquisar Exercício"
+          onFocus={() => setIsDropdownVisible(true)} // Show dropdown when input is focused
+          onBlur={() => setIsDropdownVisible(false)} // Hide dropdown when input loses focus
+        />
+      </View>
+
+      {/* Only show dropdown if the input is focused */}
+      {isDropdownVisible && (
+        <FlatList
+          data={filteredExercises.length > 0 ? filteredExercises : availableExercises}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => {
+                setExercise(item);
+                setIsDropdownVisible(false); // Hide the list after selecting an exercise
+              }}
+            >
+              <Text style={styles.dropdownText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
       <Text style={styles.label}>Peso (kg)</Text>
       <TextInput
@@ -91,7 +127,11 @@ const LogExercise = () => {
           <Text style={styles.buttonText}>Adicionar Série</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogWorkout}>
+        <TouchableOpacity
+          style={[styles.button, { opacity: isExerciseValid() ? 1 : 0.5 }]} // Only enable if the exercise is valid
+          onPress={handleLogWorkout}
+          disabled={!isExerciseValid()} // Disable button if exercise is invalid
+        >
           <Text style={styles.buttonText}>Registrar Treino</Text>
         </TouchableOpacity>
       </View>
@@ -125,19 +165,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#333',
   },
-  picker: {
-    height: 50,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
   input: {
     height: 40,
     borderWidth: 1,
@@ -147,12 +174,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 10,
   },
+  flex1: {
+    flex: 1,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  dropdownItem: {
+    padding: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
   buttonBox: {
     marginTop: 10,
     marginBottom: 15,
   },
   button: {
-    backgroundColor: '#3b5391', // Updated to the specified color
+    backgroundColor: '#3b5391',
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',

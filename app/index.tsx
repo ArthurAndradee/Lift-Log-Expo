@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 const UserAuth = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({ username: '', password: '', general: '' });
   const router = useRouter();
 
   useEffect(() => {
@@ -35,17 +36,39 @@ const UserAuth = () => {
   };
 
   const handleRegister = async () => {
+    setErrors({ username: '', password: '', general: '' }); // Reset errors before submission
+
+    if (username.length < 8) {
+      setErrors(prev => ({ ...prev, username: 'Username must be at least 8 characters long' }));
+      return;
+    }
+
     try {
       await axios.post('http://10.0.2.2:5000/api/users/register', { username, password });
+      Alert.alert('Success', 'Account created successfully');
     } catch (err) {
       console.error('Registration failed:', err);
-      Alert.alert('Error', 'Registration failed');
+
+      if (axios.isAxiosError(err) && err.response && err.response.data) {
+        const errorMessage = err.response.data.error;
+        
+        if (errorMessage.includes('Username already exists')) {
+          setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
+        } else if (errorMessage.includes('Password already in use')) {
+          setErrors(prev => ({ ...prev, password: 'This password is already in use' }));
+        } else {
+          setErrors(prev => ({ ...prev, general: 'Registration failed. Please try again' }));
+        }
+      } else {
+        setErrors(prev => ({ ...prev, general: 'Network error. Please try again later' }));
+      }
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Acessar / Criar conta</Text>
+
       <TextInput
         style={styles.input}
         value={username}
@@ -53,6 +76,8 @@ const UserAuth = () => {
         placeholder="Username"
         autoCapitalize="none"
       />
+      {errors.username ? <Text style={styles.errorText}>{errors.username}</Text> : null}
+
       <TextInput
         style={styles.input}
         value={password}
@@ -60,9 +85,14 @@ const UserAuth = () => {
         placeholder="Password"
         secureTextEntry
       />
+      {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+
+      {errors.general ? <Text style={styles.errorText}>{errors.general}</Text> : null}
+
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
+      
       <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={handleRegister}>
         <Text style={styles.buttonText}>Criar conta</Text>
       </TouchableOpacity>
@@ -90,7 +120,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 15,
+    marginBottom: 10,
     backgroundColor: '#fff',
   },
   button: {
@@ -108,6 +138,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'left',
+    width: '100%',
   },
 });
 
