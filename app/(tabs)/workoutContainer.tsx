@@ -17,10 +17,6 @@ const WorkoutContainer = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createExercise')}>
         <Text style={styles.buttonText}>Adicionar a um novo exercício</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('index')}>
-        <Text style={styles.buttonText}>Sair</Text>
-      </TouchableOpacity>
     </View>
   );
 };

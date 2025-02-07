@@ -15,7 +15,7 @@ const UserAuth = () => {
       const token = await AsyncStorage.getItem('token');
       
       if (token) {
-        router.push('/workoutContainer'); 
+        router.replace('/workoutContainer'); 
       }
     };
     checkToken();
@@ -27,41 +27,12 @@ const UserAuth = () => {
 
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('userId', (res.data.userId).toString());
+      await AsyncStorage.setItem('username', res.data.username);
 
-      router.push('/workoutContainer'); 
+      router.replace('/workoutContainer'); 
     } catch (err) {
       console.error('Login failed:', err);
       Alert.alert('Login Error', 'Invalid username or password');
-    }
-  };
-
-  const handleRegister = async () => {
-    setErrors({ username: '', password: '', general: '' }); // Reset errors before submission
-
-    if (username.length < 8) {
-      setErrors(prev => ({ ...prev, username: 'Username must be at least 8 characters long' }));
-      return;
-    }
-
-    try {
-      await axios.post('http://10.0.2.2:5000/api/users/register', { username, password });
-      Alert.alert('Success', 'Account created successfully');
-    } catch (err) {
-      console.error('Registration failed:', err);
-
-      if (axios.isAxiosError(err) && err.response && err.response.data) {
-        const errorMessage = err.response.data.error;
-        
-        if (errorMessage.includes('Username already exists')) {
-          setErrors(prev => ({ ...prev, username: 'Username is already taken' }));
-        } else if (errorMessage.includes('Password already in use')) {
-          setErrors(prev => ({ ...prev, password: 'This password is already in use' }));
-        } else {
-          setErrors(prev => ({ ...prev, general: 'Registration failed. Please try again' }));
-        }
-      } else {
-        setErrors(prev => ({ ...prev, general: 'Network error. Please try again later' }));
-      }
     }
   };
 
@@ -93,7 +64,7 @@ const UserAuth = () => {
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={handleRegister}>
+      <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => router.push('/register')}>
         <Text style={styles.buttonText}>Criar conta</Text>
       </TouchableOpacity>
     </View>

@@ -3,8 +3,9 @@ import { Stack } from 'expo-router';
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{headerTitle: ""}}>
-      <Stack.Screen name="userAuth" options={{ headerShown: false }} />
+    <Stack screenOptions={{headerTitle: "",}}>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
