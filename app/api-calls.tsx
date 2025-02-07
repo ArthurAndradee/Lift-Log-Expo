@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Set, WorkoutRecord } from './interfaces';
 import { Alert } from 'react-native';
 
-const API_BASE_URL = 'https://lift-log-backend.vercel.app/api/workouts';
+const API_BASE_URL = 'https://lift-log-backend.onrender.com';
 
 export const fetchExercises = async (setAvailableExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem('token');

@@ -67,7 +67,7 @@ const RegisterScreen = () => {
       });
   
 
-      await axios.post("https://lift-log-backend.vercel.app/api/users/register", formData, {
+      await axios.post("https://lift-log-backend.onrender.com/api/users/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   

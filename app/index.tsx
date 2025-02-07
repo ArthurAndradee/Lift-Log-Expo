@@ -25,8 +25,7 @@ const UserAuth = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('https://lift-log-backend.vercel.app//api/users/login', { username, password });
-
+      const res = await axios.post('https://lift-log-backend.onrender.com/api/users/login', { username, password });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('userId', (res.data.userId).toString());
       await AsyncStorage.setItem('username', res.data.username);
@@ -35,7 +34,7 @@ const UserAuth = () => {
       router.replace('/workoutContainer'); 
     } catch (err) {
       console.error('Login failed:', err);
-      Alert.alert('Login Error', 'Invalid username or password');
+      Alert.alert('Login Error' + err);
     }
   };
 
