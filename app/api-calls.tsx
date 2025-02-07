@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Set, WorkoutRecord } from './interfaces';
+import { Alert } from 'react-native';
 
 const API_BASE_URL = 'http://10.0.2.2:5000/api/workouts';
 
@@ -72,7 +73,7 @@ export const fetchPreviousRecords = async (
   const userId = await AsyncStorage.getItem('userId');
 
   if (!token || !userId) {
-    console.error('User is not authenticated.');
+    Alert.alert('User is not authenticated.');
     return;
   }
 
@@ -81,6 +82,29 @@ export const fetchPreviousRecords = async (
     const response = await axios.get(`${API_BASE_URL}/records/${userId}/${exercise}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("Data: " + userId + " " + exercise);  
+    setPreviousRecord(response.data);
+  } catch (error) {
+    console.error('Error fetching previous records:', error);
+  }
+};
+
+export const fetchAllWorkouts = async (
+  setPreviousRecord: (records: WorkoutRecord[]) => void
+) => {
+  const token = await AsyncStorage.getItem('token');
+  const userId = await AsyncStorage.getItem('userId');
+
+  if (!token || !userId) {
+    Alert.alert('User is not authenticated.');
+    return;
+  }
+
+  try {
+    setPreviousRecord([]);
+    const response = await axios.get(`${API_BASE_URL}/records/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }); 
     setPreviousRecord(response.data);
   } catch (error) {
     console.error('Error fetching previous records:', error);

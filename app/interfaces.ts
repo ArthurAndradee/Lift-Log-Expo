@@ -22,4 +22,5 @@ export type RootStackParamList = {
   logExercise: undefined;
   createExercise: undefined;
   exerciseSets: { exercise: string };
+  workoutDetails: { date: string };
 };
