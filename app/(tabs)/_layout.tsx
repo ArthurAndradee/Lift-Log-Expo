@@ -14,27 +14,11 @@ export default function TabLayout() {
   const fetchUserData = async () => {
     try {
       const username = await AsyncStorage.getItem('username');
-      const userId = await AsyncStorage.getItem('userId');
-      const token = await AsyncStorage.getItem('token');
-      console.log("User Id: " + userId)
-
-      const response = await axios.get(`http://10.0.2.2:5000/api/users/profile-picture/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob', // Important to receive binary data
-      });
-      
-      if (response.data) {
-        const reader = new FileReader();
-        reader.readAsDataURL(response.data);
-        reader.onloadend = () => {
-          setProfilePic(reader.result as string);
-        };
-      } else {
-        Alert.alert('Profile picture not available');
-      }
+      const profilePicture = await AsyncStorage.getItem('profilePicture');
 
       if (username) {
         setUser({ username });
+        setProfilePic(profilePicture);
       }
     } catch (error) {
       console.error("Error fetching user data: ", error);
@@ -122,7 +106,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   logoutButton: {
-    backgroundColor: "#e74c3c",
+    backgroundColor: "#7e7e7e",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,

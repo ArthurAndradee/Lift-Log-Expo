@@ -3,10 +3,12 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { LoginResponse } from './interfaces';
 
 const UserAuth = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [profilePic, setProfilePic] = useState<string | null>(null);
   const [errors, setErrors] = useState({ username: '', password: '', general: '' });
   const router = useRouter();
 
@@ -28,12 +30,26 @@ const UserAuth = () => {
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('userId', (res.data.userId).toString());
       await AsyncStorage.setItem('username', res.data.username);
+      await getProfilePic(res);
 
       router.replace('/workoutContainer'); 
     } catch (err) {
       console.error('Login failed:', err);
       Alert.alert('Login Error', 'Invalid username or password');
     }
+  };
+
+  const getProfilePic = async (res: LoginResponse): Promise<void> => {
+    const response = await axios.get<Blob>(`http://10.0.2.2:5000/api/users/profile-picture/${res.data.userId}`, {
+      headers: { Authorization: `Bearer ${res.data.token}` },
+      responseType: 'blob',
+    });
+
+    const reader = new FileReader();
+    reader.readAsDataURL(response.data);
+    reader.onloadend = async () => {
+      await AsyncStorage.setItem('profilePicture', reader.result as string);
+    };
   };
 
   return (

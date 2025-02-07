@@ -24,3 +24,11 @@ export type RootStackParamList = {
   exerciseSets: { exercise: string };
   workoutDetails: { date: string };
 };
+
+export interface LoginResponse {
+  data: {
+  token: string;
+  userId: number;
+  username: string;
+  };
+}
