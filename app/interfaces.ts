@@ -27,8 +27,10 @@ export type RootStackParamList = {
 
 export interface LoginResponse {
   data: {
-  token: string;
-  userId: number;
-  username: string;
+    token: string;
+    userId: number;
+    username: string;
+    email: string;
+    profilePicture: Blob;
   };
 }

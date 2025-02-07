@@ -33,6 +33,7 @@ export default function TabLayout() {
     await AsyncStorage.setItem('token', '');
     await AsyncStorage.setItem('userId', '');
     await AsyncStorage.setItem('username', '');
+    await AsyncStorage.setItem('profilePicture', '');
     router.replace("/");
   };
 
