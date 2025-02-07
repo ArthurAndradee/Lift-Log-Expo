@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } 
 import { Set } from './interfaces';
 import { addSet, logWorkout } from './api-calls';
 import { useRouter } from 'expo-router';
+import React from 'react';
 
 const CreateExercise = () => {
   const [exercise, setExercise] = useState('');

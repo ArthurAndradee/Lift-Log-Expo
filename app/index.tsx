@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import React from 'react';
 
 const UserAuth = () => {
   const [username, setUsername] = useState('');
@@ -24,7 +25,7 @@ const UserAuth = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://10.0.2.2:5000/api/users/login', { username, password });
+      const res = await axios.post('https://lift-log-backend.vercel.app//api/users/login', { username, password });
 
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('userId', (res.data.userId).toString());

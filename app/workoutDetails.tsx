@@ -4,6 +4,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList, WorkoutRecord } from './interfaces';
 import { fetchAllWorkouts, deleteWorkout } from './api-calls';
 import dayjs from 'dayjs';
+import React from 'react';
 
 type WorkoutDetailsScreenRouteProp = RouteProp<RootStackParamList, 'workoutDetails'>;
 

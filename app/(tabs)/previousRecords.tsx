@@ -6,6 +6,7 @@ import { RootStackParamList, WorkoutRecord } from '../interfaces';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import dayjs from 'dayjs';
+import React from 'react';
 
 const PreviousRecords = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);

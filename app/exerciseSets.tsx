@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { fetchPreviousRecords, deleteWorkout } from './api-calls';
 import { WorkoutRecord } from './interfaces';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import React from 'react';
 
 type RouteParams = {
   ExerciseSets: { exercise: string };

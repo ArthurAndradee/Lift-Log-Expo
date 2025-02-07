@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Set, WorkoutRecord } from './interfaces';
 import { Alert } from 'react-native';
 
-const API_BASE_URL = 'http://10.0.2.2:5000/api/workouts';
+const API_BASE_URL = 'https://lift-log-backend.vercel.app/api/workouts';
 
 export const fetchExercises = async (setAvailableExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem('token');
@@ -51,12 +51,9 @@ export const logWorkout = async (exercise: string, sets: Set[]) => {
   }
 
   try {
-    await axios.post(
-      `${API_BASE_URL}/log`,
-      { userId, exercise, sets },
-      { headers: { 
-        Authorization: `Bearer ${token}` 
-      } }
+    await axios.post( `${API_BASE_URL}/log`,{ userId, exercise, sets },{ 
+        headers: { Authorization: `Bearer ${token}` } 
+      }
     );
     return { logged: true };
   } catch (error) {
