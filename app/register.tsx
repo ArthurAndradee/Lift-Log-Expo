@@ -94,7 +94,7 @@ const RegisterScreen = () => {
         style={styles.input}
         value={username}
         onChangeText={setUsername}
-        placeholder="Nome"
+        placeholder="Nome (Será exibido publicamente)"
         autoCapitalize="none"
       />
 

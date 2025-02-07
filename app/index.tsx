@@ -46,7 +46,7 @@ const UserAuth = () => {
         style={styles.input}
         value={username}
         onChangeText={setUsername}
-        placeholder="Username"
+        placeholder="Nome de usuário"
         autoCapitalize="none"
       />
       {errors.username ? <Text style={styles.errorText}>{errors.username}</Text> : null}
@@ -55,7 +55,7 @@ const UserAuth = () => {
         style={styles.input}
         value={password}
         onChangeText={setPassword}
-        placeholder="Password"
+        placeholder="Senha"
         secureTextEntry
       />
       {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
