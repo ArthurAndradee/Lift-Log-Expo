@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList, WorkoutRecord } from './interfaces';
-import { fetchAllWorkouts } from './api-calls';
+import { fetchAllWorkouts, deleteWorkout } from './api-calls';
 import dayjs from 'dayjs';
 
 type WorkoutDetailsScreenRouteProp = RouteProp<RootStackParamList, 'workoutDetails'>;
@@ -33,6 +33,29 @@ const WorkoutDetailsScreen = () => {
     });
   }, [date]);
 
+  const handleDeleteWorkout = async (workoutId: number) => {
+    const isDeleted = await deleteWorkout(workoutId);
+    if (isDeleted) {
+      // Refresh workouts after deletion
+      fetchAllWorkouts((allWorkouts) => {
+        const filtered = allWorkouts.filter(
+          (workout) => dayjs(workout.date).format('DD/MM/YYYY') === date
+        );
+        const grouped = filtered.reduce((acc, workout) => {
+          const formattedTime = dayjs(workout.date).format('HH:mm');
+          if (!acc[formattedTime]) {
+            acc[formattedTime] = [];
+          }
+          acc[formattedTime].push(workout);
+          return acc;
+        }, {} as { [key: string]: WorkoutRecord[] });
+        setGroupedWorkouts(grouped);
+      });
+    } else {
+      Alert.alert('Error', 'Failed to delete workout');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exercícios de {date}</Text>
@@ -43,15 +66,21 @@ const WorkoutDetailsScreen = () => {
           <View style={styles.workoutGroup}>
             <View style={styles.groupTitleContainer}>
               <Text style={styles.groupTitle}>{items[0].exercise}</Text>
-              <Text style={styles.timeText}>{time}</Text> 
+              <Text style={styles.timeText}>{time}</Text>
             </View>
             {items.map((item) => (
               <View key={`${item.exercise}-${item.setNumber}`} style={styles.workoutItem}>
-                <Text style={styles.boldText}>Set {item.setNumber} - </Text>
-                <Text>Peso: <Text style={styles.boldText}>{item.weight}kg</Text> | </Text>
-                <Text>Reps: {item.reps}</Text>
+                <Text style={[styles.boldText, styles.itemFont]}>Set {item.setNumber} - </Text>
+                <Text style={styles.itemFont}>Peso: <Text style={styles.boldText}>{item.weight}kg</Text> | </Text>
+                <Text style={styles.itemFont}>Reps: {item.reps}</Text>
               </View>
             ))}
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDeleteWorkout(items[0].workoutId)}
+            >
+              <Text style={styles.deleteButtonText}>Deletar Set</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -67,7 +96,10 @@ const styles = StyleSheet.create({
   groupTitle: { fontSize: 16, fontWeight: 'bold' },
   timeText: { fontSize: 16, fontWeight: 'bold', color: '#555' },  // Style for the time text
   boldText: { fontWeight: 'bold' },
+  itemFont: { fontSize: 18 },
   workoutItem: { padding: 10, backgroundColor: '#fff', borderRadius: 8, marginVertical: 5, elevation: 3, flexDirection: 'row', flexWrap: 'wrap' },
+  deleteButton: { backgroundColor: '#ff4d4d', paddingVertical: 8, borderRadius: 6, alignItems: 'center', marginTop: 10 },
+  deleteButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
 });
 
 export default WorkoutDetailsScreen;
