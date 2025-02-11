@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import React from 'react';
+import { API_BASE_URL } from './api-calls';
 
 const UserAuth = () => {
   const [username, setUsername] = useState('');
@@ -25,7 +26,7 @@ const UserAuth = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('https://lift-log-backend.onrender.com/api/users/login', { username, password });
+      const res = await axios.post(`${API_BASE_URL}/api/users/login`, { username, password });
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('userId', (res.data.userId).toString());
       await AsyncStorage.setItem('username', res.data.username);

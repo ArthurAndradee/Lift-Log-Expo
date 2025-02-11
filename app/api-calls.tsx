@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Set, WorkoutRecord } from './interfaces';
 import { Alert } from 'react-native';
 
-const API_BASE_URL = 'https://lift-log-backend.onrender.com';
+export const API_BASE_URL = 'http://localhost:5000';
 
 export const fetchExercises = async (setAvailableExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem('token');
@@ -13,7 +13,7 @@ export const fetchExercises = async (setAvailableExercises: (exercises: string[]
   }
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/exercises`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/exercises`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setAvailableExercises(response.data.exercises);
@@ -51,7 +51,7 @@ export const logWorkout = async (exercise: string, sets: Set[]) => {
   }
 
   try {
-    await axios.post( `${API_BASE_URL}/log`,{ userId, exercise, sets },{ 
+    await axios.post( `${API_BASE_URL}/api/workouts/log`,{ userId, exercise, sets },{ 
         headers: { Authorization: `Bearer ${token}` } 
       }
     );
@@ -76,7 +76,7 @@ export const fetchPreviousRecords = async (
 
   try {
     setPreviousRecord([]);
-    const response = await axios.get(`${API_BASE_URL}/records/${userId}/${exercise}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/records/${userId}/${exercise}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     console.log("Data: " + userId + " " + exercise);  
@@ -99,7 +99,7 @@ export const fetchAllWorkouts = async (
 
   try {
     setPreviousRecord([]);
-    const response = await axios.get(`${API_BASE_URL}/records/${userId}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/records/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     }); 
     setPreviousRecord(response.data);
@@ -118,7 +118,7 @@ export const deleteWorkout = async (workoutId: number) => {
   }
 
   try {
-    await axios.delete(`${API_BASE_URL}/delete`, {
+    await axios.delete(`${API_BASE_URL}/api/workouts/delete`, {
       data: { userId, workoutId },
       headers: { Authorization: `Bearer ${token}` },
     });

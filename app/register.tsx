@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import { useRouter } from "expo-router";
 import axios from "axios";
+import { API_BASE_URL } from "./api-calls";
 
 const MAX_IMAGE_SIZE = 256 * 1024;
 
@@ -67,7 +68,7 @@ const RegisterScreen = () => {
       });
   
 
-      await axios.post("https://lift-log-backend.onrender.com/api/users/register", formData, {
+      await axios.post(`${API_BASE_URL}/api/users/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
   
