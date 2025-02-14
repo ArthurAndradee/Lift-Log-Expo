@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { fetchExercises, fetchAllWorkouts } from '../api-calls';
-import { RootStackParamList, WorkoutRecord } from '../interfaces';
+import { RootStackParamList, Exercise } from '../interfaces';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import dayjs from 'dayjs';
@@ -10,7 +10,7 @@ import React from 'react';
 
 const PreviousRecords = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [workoutHistory, setWorkoutHistory] = useState<WorkoutRecord[]>([]);
+  const [workoutHistory, setWorkoutHistory] = useState<Exercise[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
@@ -46,7 +46,7 @@ const PreviousRecords = () => {
     if (userId && searchMode === 'workout') {
       fetchAllWorkouts((workouts) => {
         // Group workouts by date
-        const groupedWorkouts: Record<string, WorkoutRecord[]> = {};
+        const groupedWorkouts: Record<string, Exercise[]> = {};
   
         workouts.forEach((workout) => {
           const formattedDate = dayjs(workout.date).format('DD/MM/YYYY');
@@ -121,7 +121,7 @@ const PreviousRecords = () => {
 
       <TouchableOpacity style={styles.button} onPress={() => setSearchMode(searchMode === 'exercise' ? 'workout' : 'exercise')}>
         <Text style={styles.buttonText}>
-          {searchMode === 'exercise' ? 'Pesquise por um dia' : 'Pesquise por um exercício'}
+          {searchMode === 'exercise' ? 'Pesquise por dia' : 'Pesquise por exercício'}
         </Text>
       </TouchableOpacity>
     </View>

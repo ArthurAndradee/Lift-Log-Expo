@@ -2,7 +2,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Alert, SectionList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { fetchPreviousRecords, deleteWorkout } from './api-calls';
-import { WorkoutRecord } from './interfaces';
+import { Exercise } from './interfaces';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 
@@ -13,7 +13,7 @@ type RouteParams = {
 const ExerciseSets = () => {
   const route = useRoute<RouteProp<RouteParams, 'ExerciseSets'>>();
   const { exercise } = route.params;
-  const [previousRecord, setPreviousRecord] = useState<WorkoutRecord[]>([]);
+  const [previousRecord, setPreviousRecord] = useState<Exercise[]>([]);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -21,6 +21,7 @@ const ExerciseSets = () => {
 
   useEffect(() => {
     fetchPreviousRecords(exercise, setPreviousRecord);
+    console.log(previousRecord)
   }, [exercise]);
 
   const handleDeleteWorkout = async (workoutId: number) => {
@@ -60,12 +61,12 @@ const groupedRecords = filteredRecords.reduce((acc, item) => {
   const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const dateTime = `${date} - ${time}`;
 
-  if (!acc[item.workoutId]) {
-    acc[item.workoutId] = { workoutId: item.workoutId, dateTime, records: [] };
+  if (!acc[item.exerciseId]) {
+    acc[item.exerciseId] = { workoutId: item.exerciseId, dateTime, records: [] };
   }
-  acc[item.workoutId].records.push(item);
+  acc[item.exerciseId].records.push(item);
   return acc;
-}, {} as Record<number, { workoutId: number, dateTime: string, records: WorkoutRecord[] }>);
+}, {} as Record<number, { workoutId: number, dateTime: string, records: Exercise[] }>);
 
 // Convert grouped records into a format suitable for SectionList
 const sections = Object.keys(groupedRecords)
@@ -75,7 +76,6 @@ const sections = Object.keys(groupedRecords)
     workoutId: +key,
   }))
   .reverse(); // Reverse the order of the sections if needed
-
 
   return (
     <View style={styles.container}>
@@ -116,7 +116,7 @@ const sections = Object.keys(groupedRecords)
 
       <SectionList
         sections={sections}
-        keyExtractor={(item) => item.workoutId.toString()}
+        keyExtractor={(item) => item.exerciseId.toString()}
         renderItem={({ item, index, section }) => (
           <View>
             <View style={styles.recordItem}>

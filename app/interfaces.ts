@@ -4,13 +4,13 @@ export interface Set {
     weight: number;
   }
   
-export interface WorkoutRecord {
+export interface Exercise {
   date: string;
-  exercise: string;
+  name: string;
   reps: number;
   setNumber: number;
   weight: number;
-  workoutId: number;
+  exerciseId: number;
   sets: Set[];
 }
 
@@ -21,6 +21,7 @@ export type RootStackParamList = {
   workoutContainer: undefined;
   logExercise: undefined;
   createExercise: undefined;
+  createWorkout: undefined;
   exerciseSets: { exercise: string };
   workoutDetails: { date: string };
 };

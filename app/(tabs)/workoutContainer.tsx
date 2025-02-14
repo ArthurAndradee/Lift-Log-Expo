@@ -10,12 +10,20 @@ const WorkoutContainer = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createExercise')}>
+        <Text style={styles.buttonText}>Criar novo exercício</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('logExercise')}>
-        <Text style={styles.buttonText}>Adicionar a um exercício existente</Text>
+        <Text style={styles.buttonText}>Registrar exercício existente</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createWorkout')}>
+        <Text style={styles.buttonText}>Criar novo treino</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createExercise')}>
-        <Text style={styles.buttonText}>Adicionar a um novo exercício</Text>
+        <Text style={styles.buttonText}>Registra treino existente</Text>
       </TouchableOpacity>
     </View>
   );

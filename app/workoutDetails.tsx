@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList, WorkoutRecord } from './interfaces';
+import { RootStackParamList, Exercise } from './interfaces';
 import { fetchAllWorkouts, deleteWorkout } from './api-calls';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -11,7 +11,7 @@ type WorkoutDetailsScreenRouteProp = RouteProp<RootStackParamList, 'workoutDetai
 const WorkoutDetailsScreen = () => {
   const route = useRoute<WorkoutDetailsScreenRouteProp>();
   const { date } = route.params;
-  const [groupedWorkouts, setGroupedWorkouts] = useState<{ [key: string]: WorkoutRecord[] }>({});
+  const [groupedWorkouts, setGroupedWorkouts] = useState<{ [key: string]: Exercise[] }>({});
 
   useEffect(() => {
     fetchAllWorkouts((allWorkouts) => {
@@ -28,7 +28,7 @@ const WorkoutDetailsScreen = () => {
         }
         acc[formattedTime].push(workout);
         return acc;
-      }, {} as { [key: string]: WorkoutRecord[] });
+      }, {} as { [key: string]: Exercise[] });
 
       setGroupedWorkouts(grouped);
     });
@@ -49,7 +49,7 @@ const WorkoutDetailsScreen = () => {
           }
           acc[formattedTime].push(workout);
           return acc;
-        }, {} as { [key: string]: WorkoutRecord[] });
+        }, {} as { [key: string]: Exercise[] });
         setGroupedWorkouts(grouped);
       });
     } else {
@@ -66,11 +66,11 @@ const WorkoutDetailsScreen = () => {
         renderItem={({ item: [time, items] }) => (
           <View style={styles.workoutGroup}>
             <View style={styles.groupTitleContainer}>
-              <Text style={styles.groupTitle}>{items[0].exercise}</Text>
+              <Text style={styles.groupTitle}>{items[0].name}</Text>
               <Text style={styles.timeText}>{time}</Text>
             </View>
             {items.map((item) => (
-              <View key={`${item.exercise}-${item.setNumber}`} style={styles.workoutItem}>
+              <View key={`${item.name}-${item.setNumber}`} style={styles.workoutItem}>
                 <Text style={[styles.boldText, styles.itemFont]}>Set {item.setNumber} - </Text>
                 <Text style={styles.itemFont}>Peso: <Text style={styles.boldText}>{item.weight}kg</Text> | </Text>
                 <Text style={styles.itemFont}>Reps: {item.reps}</Text>
@@ -78,7 +78,7 @@ const WorkoutDetailsScreen = () => {
             ))}
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={() => handleDeleteWorkout(items[0].workoutId)}
+              onPress={() => handleDeleteWorkout(items[0].exerciseId)}
             >
               <Text style={styles.deleteButtonText}>Deletar Set</Text>
             </TouchableOpacity>

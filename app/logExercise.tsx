@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from './interfaces';
 import { addSet, fetchExercises, logWorkout } from './api-calls';
-import { MaterialIcons } from '@expo/vector-icons'; // Assuming you are using Expo for icons
 
 const LogExercise = () => {
   const [exercise, setExercise] = useState('');
