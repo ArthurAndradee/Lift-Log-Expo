@@ -14,7 +14,6 @@ const CreateWorkout = () => {
   const [workoutName, setWorkoutName] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [exerciseSearch, setExerciseSearch] = useState('');
-  const [workoutIds, setWorkoutIds] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -114,10 +113,9 @@ const CreateWorkout = () => {
       );
 
       if (logResults.every(result => result.logged)) {
-        const newWorkoutIds = logResults.map(result => result.exerciseId); 
-        setWorkoutIds(prevIds => [...prevIds, ...newWorkoutIds]);
+        setSelectedExercises([]);
+        setWorkoutName('');
 
-        Alert.alert('Sucesso', 'Treino registrado com sucesso.');
         router.push('/workoutContainer');
       } else {
         Alert.alert('Erro', 'Falha ao registrar treino.');
