@@ -2,7 +2,7 @@ export interface Set {
     setNumber: number;
     reps:number;
     weight: number;
-  }
+}
   
 export interface Exercise {
   date: string;

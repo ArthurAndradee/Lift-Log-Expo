@@ -1,15 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
+import { Set } from "./interfaces";
 import { fetchExercises } from './api-calls';
 
 const CreateWorkout = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [selectedExercises, setSelectedExercises] = useState<{ name: string; sets: string; reps: string }[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<
+    { name: string; sets: Set[] }[]
+  >([]);
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [workoutName, setWorkoutName] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [exerciseSearch, setExerciseSearch] = useState('');
+
 
   useEffect(() => {
     const loadExercises = async () => {
@@ -31,8 +35,9 @@ const CreateWorkout = () => {
   };
 
   const addExerciseToWorkout = (exercise: string) => {
-    setSelectedExercises([...selectedExercises, { name: exercise, sets: '', reps: '' }]);
+    setSelectedExercises([...selectedExercises, { name: exercise, sets: [] }]);
     setAvailableExercises(availableExercises.filter((ex) => ex !== exercise));
+
     setExerciseSearch('');
     setFilteredExercises([]);
     setIsDropdownVisible(false);
@@ -43,9 +48,38 @@ const CreateWorkout = () => {
     setAvailableExercises([...availableExercises, exercise]);
   };
 
-  const updateExerciseField = (exerciseName: string, field: 'sets' | 'reps', value: string) => {
+  const updateSetField = (exerciseName: string, setIndex: number, field: 'reps' | 'weight', value: string) => {
     setSelectedExercises((prevExercises) =>
-      prevExercises.map((ex) => (ex.name === exerciseName ? { ...ex, [field]: value } : ex))
+      prevExercises.map((ex) =>
+        ex.name === exerciseName
+          ? {
+              ...ex,
+              sets: ex.sets.map((set, index) =>
+                index === setIndex ? { ...set, [field]: value } : set
+              ),
+            }
+          : ex
+      )
+    );
+  };
+
+  const addSetToExercise = (exerciseName: string) => {
+    setSelectedExercises((prevExercises) =>
+      prevExercises.map((ex) =>
+        ex.name === exerciseName
+          ? { ...ex, sets: [...ex.sets, { setNumber: ex.sets.length + 1, reps: 0, weight: 0 }] }
+          : ex
+      )
+    );
+  };
+
+  const removeSetFromExercise = (exerciseName: string, setIndex: number) => {
+    setSelectedExercises((prevExercises) =>
+      prevExercises.map((ex) =>
+        ex.name === exerciseName
+          ? { ...ex, sets: ex.sets.filter((_, index) => index !== setIndex) }
+          : ex
+      )
     );
   };
 
@@ -58,25 +92,25 @@ const CreateWorkout = () => {
       Alert.alert('Erro', 'Adicione pelo menos um exercício ao treino.');
       return;
     }
-    if (selectedExercises.some(ex => !ex.sets || !ex.reps)) {
-      Alert.alert('Erro', 'Preencha o número de séries e repetições para cada exercício.');
+    if (selectedExercises.some(ex => ex.sets.some(set => !set.reps || !set.weight))) {
+      Alert.alert('Erro', 'Preencha todas as repetições e pesos para cada série.');
       return;
     }
 
     const workoutData = { name: workoutName, exercises: selectedExercises };
-    console.log('Workout:', workoutData);
 
-    // Save workout (uncomment when implementing backend)
-    // const result = await createWorkout(workoutName, selectedExercises);
-    // if (result.success) {
-    //   Alert.alert('Sucesso', 'Treino criado com sucesso!');
-    //   setWorkoutName('');
-    //   setSelectedExercises([]);
-    //   setAvailableExercises([]);
-    //   fetchExercises(setAvailableExercises);
-    // } else {
-    //   Alert.alert('Erro', 'Falha ao criar treino.');
-    // }
+    for(var i = 0; i < selectedExercises.length; i++) {
+      console.log(workoutData.exercises[i].name);
+
+      for(var j = 0; j < selectedExercises[i].sets.length; j++) {
+        console.log(workoutData.exercises[i].sets[j].setNumber);
+        console.log(workoutData.exercises[i].sets[j].weight);
+        console.log(workoutData.exercises[i].sets[j].reps);
+      }
+      // const result = await logWorkout(exercise, sets);
+    }
+
+    // Save workout logic
   };
 
   return (
@@ -84,12 +118,7 @@ const CreateWorkout = () => {
       <Text style={styles.title}>Criar Novo Treino</Text>
 
       <Text style={styles.label}>Nome do Treino</Text>
-      <TextInput
-        style={styles.input}
-        value={workoutName}
-        onChangeText={setWorkoutName}
-        placeholder="Nome do Treino"
-      />
+      <TextInput style={styles.input} value={workoutName} onChangeText={setWorkoutName} placeholder="Nome do Treino" />
 
       <Text style={styles.label}>Adicionar Exercícios</Text>
       <TextInput
@@ -121,32 +150,38 @@ const CreateWorkout = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.setItem}>
-            <View style={styles.exerciseInfo}>
-              <Text style={styles.setText}>{item.name}</Text>
-              <View style={styles.inputRow}>
+            <Text style={styles.setText}>{item.name}</Text>
+            {item.sets.map((set, setIndex) => (
+              <View key={setIndex} style={styles.setRow}>
+                <Text>Set {setIndex + 1}:</Text>
                 <TextInput
                   style={styles.inputSmall}
-                  value={item.sets}
-                  onChangeText={(text) => updateExerciseField(item.name, 'sets', text)}
-                  placeholder="Séries"
+                  value={set.reps.toString()}
+                  onChangeText={(text) => updateSetField(item.name, setIndex, 'reps', text)}
+                  placeholder="Reps"
                   keyboardType="numeric"
                 />
                 <Text style={styles.labelSmall}>x</Text>
                 <TextInput
                   style={styles.inputSmall}
-                  value={item.reps}
-                  onChangeText={(text) => updateExerciseField(item.name, 'reps', text)}
-                  placeholder="Reps"
+                  value={set.weight.toString()}
+                  onChangeText={(text) => updateSetField(item.name, setIndex, 'weight', text)}
+                  placeholder="Peso"
                   keyboardType="numeric"
                 />
+                <TouchableOpacity onPress={() => removeSetFromExercise(item.name, setIndex)}>
+                  <Text style={styles.removeText}>✖</Text>
+                </TouchableOpacity>
               </View>
-            </View>
+            ))}
+            <TouchableOpacity onPress={() => addSetToExercise(item.name)}>
+              <Text style={styles.addSetText}>+ Adicionar Série</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => removeExerciseFromWorkout(item.name)}>
-              <Text style={styles.removeText}>Remover</Text>
+              <Text style={styles.removeText}>Remover Exercício</Text>
             </TouchableOpacity>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.noResults}>Nenhum exercício adicionado.</Text>}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleCreateWorkout}>
@@ -209,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     marginVertical: 5,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
@@ -232,6 +267,7 @@ const styles = StyleSheet.create({
   removeText: {
     color: 'red',
     fontSize: 14,
+    marginLeft: 10,
   },
   button: {
     backgroundColor: '#3b5391',
@@ -250,6 +286,16 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
     marginTop: 10,
+  },
+  setRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  addSetText: {
+    color: '#3b5391',
+    fontWeight: 'bold',
+    marginTop: 5,
   },
 });
 
