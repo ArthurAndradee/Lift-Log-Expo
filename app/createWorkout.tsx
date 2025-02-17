@@ -5,7 +5,7 @@ import { fetchExercises } from './api-calls';
 
 const CreateWorkout = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<{ name: string; sets: string; reps: string }[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [workoutName, setWorkoutName] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -22,25 +22,31 @@ const CreateWorkout = () => {
     setExerciseSearch(text);
     if (text) {
       const filtered = availableExercises.filter(
-        (ex) => ex.toLowerCase().includes(text.toLowerCase()) && !selectedExercises.includes(ex)
+        (ex) => ex.toLowerCase().includes(text.toLowerCase()) && !selectedExercises.some(se => se.name === ex)
       );
-      console.log(availableExercises); 
       setFilteredExercises(filtered);
     } else {
-      setFilteredExercises([])
+      setFilteredExercises([]);
     }
   };
 
   const addExerciseToWorkout = (exercise: string) => {
-    setSelectedExercises([...selectedExercises, exercise]);
+    setSelectedExercises([...selectedExercises, { name: exercise, sets: '', reps: '' }]);
     setAvailableExercises(availableExercises.filter((ex) => ex !== exercise));
     setExerciseSearch('');
     setFilteredExercises([]);
+    setIsDropdownVisible(false);
   };
 
   const removeExerciseFromWorkout = (exercise: string) => {
-    setSelectedExercises(selectedExercises.filter((ex) => ex !== exercise));
+    setSelectedExercises(selectedExercises.filter((ex) => ex.name !== exercise));
     setAvailableExercises([...availableExercises, exercise]);
+  };
+
+  const updateExerciseField = (exerciseName: string, field: 'sets' | 'reps', value: string) => {
+    setSelectedExercises((prevExercises) =>
+      prevExercises.map((ex) => (ex.name === exerciseName ? { ...ex, [field]: value } : ex))
+    );
   };
 
   const handleCreateWorkout = async () => {
@@ -52,6 +58,15 @@ const CreateWorkout = () => {
       Alert.alert('Erro', 'Adicione pelo menos um exercício ao treino.');
       return;
     }
+    if (selectedExercises.some(ex => !ex.sets || !ex.reps)) {
+      Alert.alert('Erro', 'Preencha o número de séries e repetições para cada exercício.');
+      return;
+    }
+
+    const workoutData = { name: workoutName, exercises: selectedExercises };
+    console.log('Workout:', workoutData);
+
+    // Save workout (uncomment when implementing backend)
     // const result = await createWorkout(workoutName, selectedExercises);
     // if (result.success) {
     //   Alert.alert('Sucesso', 'Treino criado com sucesso!');
@@ -82,8 +97,10 @@ const CreateWorkout = () => {
         value={exerciseSearch}
         onChangeText={handleSearchChange}
         placeholder="Pesquisar Exercício"
-        onFocus={() => setIsDropdownVisible(true)}
-        onBlur={() => setIsDropdownVisible(false)}
+        onFocus={() => {
+          setIsDropdownVisible(true);
+          setFilteredExercises(availableExercises);
+        }}
       />
 
       {isDropdownVisible && (
@@ -104,8 +121,27 @@ const CreateWorkout = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.setItem}>
-            <Text style={styles.setText}>{item}</Text>
-            <TouchableOpacity onPress={() => removeExerciseFromWorkout(item)}>
+            <View style={styles.exerciseInfo}>
+              <Text style={styles.setText}>{item.name}</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.inputSmall}
+                  value={item.sets}
+                  onChangeText={(text) => updateExerciseField(item.name, 'sets', text)}
+                  placeholder="Séries"
+                  keyboardType="numeric"
+                />
+                <Text style={styles.labelSmall}>x</Text>
+                <TextInput
+                  style={styles.inputSmall}
+                  value={item.reps}
+                  onChangeText={(text) => updateExerciseField(item.name, 'reps', text)}
+                  placeholder="Reps"
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+            <TouchableOpacity onPress={() => removeExerciseFromWorkout(item.name)}>
               <Text style={styles.removeText}>Remover</Text>
             </TouchableOpacity>
           </View>
@@ -137,6 +173,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
   },
+  labelSmall: {
+    fontSize: 16,
+    marginHorizontal: 5,
+  },
   input: {
     height: 40,
     borderWidth: 1,
@@ -145,6 +185,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: '#fff',
     marginBottom: 10,
+  },
+  inputSmall: {
+    height: 40,
+    width: 60,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    textAlign: 'center',
+    backgroundColor: '#fff',
   },
   dropdownItem: {
     padding: 10,
@@ -168,6 +217,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+  exerciseInfo: {
+    flex: 1,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
   },
   setText: {
     fontSize: 16,
