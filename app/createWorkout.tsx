@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from "./interfaces";
-import { fetchExercises } from './api-calls';
+import { fetchExercises, logWorkout } from './api-calls';
+import { useRouter } from 'expo-router';
 
 const CreateWorkout = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
@@ -13,6 +14,7 @@ const CreateWorkout = () => {
   const [workoutName, setWorkoutName] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [exerciseSearch, setExerciseSearch] = useState('');
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -97,20 +99,21 @@ const CreateWorkout = () => {
       return;
     }
 
-    const workoutData = { name: workoutName, exercises: selectedExercises };
+    try {
+      const logResults = await Promise.all(
+        selectedExercises.map(exercise => logWorkout(exercise.name, exercise.sets))
+      );
 
-    for(var i = 0; i < selectedExercises.length; i++) {
-      console.log(workoutData.exercises[i].name);
-
-      for(var j = 0; j < selectedExercises[i].sets.length; j++) {
-        console.log(workoutData.exercises[i].sets[j].setNumber);
-        console.log(workoutData.exercises[i].sets[j].weight);
-        console.log(workoutData.exercises[i].sets[j].reps);
+      if (logResults.every(result => result.logged)) {
+        Alert.alert('Sucesso', 'Treino registrado com sucesso.');
+        router.push('/workoutContainer');
+      } else {
+        Alert.alert('Erro', 'Falha ao registrar treino.');
       }
-      // const result = await logWorkout(exercise, sets);
+    } catch (error) {
+      console.error('Error logging workout:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao registrar o treino.');
     }
-
-    // Save workout logic
   };
 
   return (
