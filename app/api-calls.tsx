@@ -5,25 +5,6 @@ import { Alert } from "react-native";
 
 export const API_BASE_URL = "http://10.0.2.2:5000";
 
-export const fetchExercises = async (
-  setAvailableExercises: (exercises: string[]) => void
-) => {
-  const token = await AsyncStorage.getItem("token");
-  if (!token) {
-    console.error("User is not authenticated.");
-    return;
-  }
-
-  try {
-    const response = await axios.get(`${API_BASE_URL}/api/workouts/exercises`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setAvailableExercises(response.data.exercises);
-  } catch (error) {
-    console.error("Error fetching exercises:", error);
-  }
-};
-
 export const addSet = (
   sets: Set[],
   setWeight: number,
@@ -45,39 +26,70 @@ export const addSet = (
   };
 };
 
-export const logWorkout = async (exercise: string, sets: Set[]) => {
+export const fetchExercises = async (
+  setAvailableExercises: (exercises: string[]) => void
+) => {
+  const token = await AsyncStorage.getItem("token");
+  if (!token) {
+    console.error("User is not authenticated.");
+    return;
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/exercises`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setAvailableExercises(response.data.exercises);
+  } catch (error) {
+    console.error("Error fetching exercises:", error);
+  }
+};
+
+export const createWorkout = async (workoutName: string) => {
+  const token = await AsyncStorage.getItem("token");
+  const userId = await AsyncStorage.getItem("userId");
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/workouts/create` , { userId, workoutName }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;  // Assuming this contains { workoutId }
+  } catch (error) {
+    console.error('Error creating workout:', error);
+    throw error;
+  }
+};
+
+export const logWorkout = async (exercise: string, sets: Set[], workoutId: number | null) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
   if (!token || !userId) {
     alert("User is not authenticated.");
-    return { logged: false };
+    return { logged: false, exerciseId: null };
   }
 
   if (!exercise) {
     alert("Please select an exercise.");
-    return { logged: false };
+    return { logged: false, exerciseId: null };
   }
 
   try {
-    await axios.post(
-      `${API_BASE_URL}/api/workouts/log`,
-      { userId, exercise, sets },
-      {
+    const response = await axios.post(`${API_BASE_URL}/api/workouts/log`, { userId, exercise, sets, workoutId }, {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
-    return { logged: true };
+
+    return { logged: true, exerciseId: response.data.exerciseId };
   } catch (error) {
     console.error("Failed to log workout:", error);
-    return { logged: false };
+    return { logged: false, exerciseId: null };
   }
 };
 
 export const fetchPreviousRecords = async (
   exercise: string,
-  setPreviousRecord: (records: Exercise[]) => void
-) => {
+  setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
   
@@ -88,9 +100,7 @@ export const fetchPreviousRecords = async (
   
   try {
     setPreviousRecord([]);
-    const response = await axios.get(
-      `${API_BASE_URL}/api/workouts/records/${userId}/${exercise}`,
-      {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/records/${userId}/${exercise}`, {
         headers: { Authorization: `Bearer ${token}` },
       }
     );
@@ -101,8 +111,7 @@ export const fetchPreviousRecords = async (
 };
 
 export const fetchAllWorkouts = async (
-  setPreviousRecord: (records: Exercise[]) => void
-) => {
+  setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
@@ -113,9 +122,7 @@ export const fetchAllWorkouts = async (
 
   try {
     setPreviousRecord([]);
-    const response = await axios.get(
-      `${API_BASE_URL}/api/workouts/records/${userId}`,
-      {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/records/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       }
     );

@@ -57,6 +57,8 @@ const WorkoutDetailsScreen = () => {
     }
   };
 
+  console.log(groupedWorkouts);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exercícios de {date}</Text>
@@ -66,7 +68,7 @@ const WorkoutDetailsScreen = () => {
         renderItem={({ item: [time, items] }) => (
           <View style={styles.workoutGroup}>
             <View style={styles.groupTitleContainer}>
-              <Text style={styles.groupTitle}>{items[0].name}</Text>
+              <Text style={styles.groupTitle}>{items[0].exercise}</Text>
               <Text style={styles.timeText}>{time}</Text>
             </View>
             {items.map((item) => (
