@@ -43,7 +43,7 @@ const LogExercise = () => {
   };
 
   const handleLogWorkout = async () => {
-    const result = await logWorkout(exercise, sets);
+    const result = await logWorkout(exercise, sets, null);
     if (result.logged) {
       setExercise('');
       setSets([]);
