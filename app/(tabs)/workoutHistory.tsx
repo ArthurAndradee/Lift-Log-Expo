@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { fetchExercises, fetchAllWorkouts } from '../api-calls';
-import { RootStackParamList, Exercise } from '../interfaces';
+import { fetchExercises, fetchAllWorkouts } from '../../constants/api-calls';
+import { RootStackParamList, Exercise } from '../../constants/interfaces';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import dayjs from 'dayjs';
@@ -74,7 +74,7 @@ const PreviousRecords = () => {
   }, [searchQuery, availableExercises]);
 
   const handleExerciseSelection = (exercise: string) => {
-    navigation.navigate('exerciseSets', { exercise });
+    navigation.navigate('exerciseHistorByName', { exercise });
   };
 
   return (
@@ -110,7 +110,7 @@ const PreviousRecords = () => {
           renderItem={({ item: date }) => (
             <TouchableOpacity
               style={styles.workoutItem}
-              onPress={() => navigation.navigate('workoutDetails', { date })}
+              onPress={() => navigation.navigate('exerciseHistoryByDays', { date })}
             >
               <Text style={styles.bold}>{date}</Text>
             </TouchableOpacity>

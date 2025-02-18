@@ -1,8 +1,8 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Alert, SectionList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
-import { fetchPreviousRecords, deleteWorkout } from './api-calls';
-import { Exercise } from './interfaces';
+import { fetchPreviousRecords, deleteWorkout } from '../constants/api-calls';
+import { Exercise } from '../constants/interfaces';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 

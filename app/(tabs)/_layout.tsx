@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -58,14 +58,14 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="workoutContainer"
+        name="workoutCreator"
         options={{
           tabBarLabel: "Treino",
           tabBarIcon: ({ color }) => <MaterialCommunityIcons name="weight-lifter" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="previousRecords"
+        name="workoutHistory"
         options={{
           tabBarLabel: "Registros",
           tabBarIcon: ({ color }) => <AntDesign name="barschart" size={24} color={color} />,

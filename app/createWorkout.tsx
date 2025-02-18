@@ -1,14 +1,15 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { Set } from "./interfaces";
-import { createWorkout, fetchExercises, logWorkout } from './api-calls';
+import { Set } from "../constants/interfaces";
+import { createWorkout, fetchExercises, logExercise } from '../constants/api-calls';
 import { useRouter } from 'expo-router';
 
 const CreateWorkout = () => {
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [selectedExercises, setSelectedExercises] = useState<
-    { name: string; sets: Set[] }[]
+  const [selectedExercises, setSelectedExercises] = useState<{ 
+      name: string; 
+      sets: Set[];
+    }[]
   >([]);
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
   const [workoutName, setWorkoutName] = useState('');
@@ -109,7 +110,7 @@ const CreateWorkout = () => {
       const workoutId = workoutResponse.workoutId;
 
       const logResults = await Promise.all(
-        selectedExercises.map(exercise => logWorkout(exercise.name, exercise.sets, workoutId))
+        selectedExercises.map(exercise => logExercise(exercise.name, exercise.sets, workoutId))
       );
 
       if (logResults.every(result => result.logged)) {

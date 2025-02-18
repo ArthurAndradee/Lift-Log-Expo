@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Set, Exercise } from "./interfaces";
+import { Set, Exercise, ExistingWorktoutExercise } from "./interfaces";
 import { Alert } from "react-native";
 
 export const API_BASE_URL = "http://10.0.2.2:5000";
@@ -26,9 +26,7 @@ export const addSet = (
   };
 };
 
-export const fetchExercises = async (
-  setAvailableExercises: (exercises: string[]) => void
-) => {
+export const fetchExercises = async (setAvailableExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   if (!token) {
     console.error("User is not authenticated.");
@@ -60,7 +58,7 @@ export const createWorkout = async (workoutName: string) => {
   }
 };
 
-export const logWorkout = async (exercise: string, sets: Set[], workoutId: number | null) => {
+export const logExercise = async (exercise: string, sets: Set[], workoutId: number | null) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
@@ -87,9 +85,7 @@ export const logWorkout = async (exercise: string, sets: Set[], workoutId: numbe
   }
 };
 
-export const fetchPreviousRecords = async (
-  exercise: string,
-  setPreviousRecord: (records: Exercise[]) => void) => {
+export const fetchPreviousRecords = async (exercise: string, setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
   
@@ -110,8 +106,7 @@ export const fetchPreviousRecords = async (
   }
 };
 
-export const fetchAllWorkouts = async (
-  setPreviousRecord: (records: Exercise[]) => void) => {
+export const fetchAllWorkouts = async (setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
@@ -150,5 +145,68 @@ export const deleteWorkout = async (workoutId: number) => {
   } catch (error) {
     console.error("Error deleting workout:", error);
     return false;
+  }
+};
+
+////TEST ALL THE FUNCTIONS BELOW
+
+// Get all workouts for a user
+export const getWorkoutsForUser = async () => {
+  const userId = await AsyncStorage.getItem("userId");
+  const token = await AsyncStorage.getItem("token");
+  
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/workoutss/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching workouts:', error);
+    throw error;
+  }
+};
+
+// Get all exercise names for a specific workout
+export const getExerciseNamesForWorkout = async (workoutId: number) => {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/${workoutId}/exercises`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching exercise names:', error);
+    throw error;
+  }
+};
+
+// Get detailed exercise information for a workout
+export const getExerciseDetailsForWorkout = async (workoutId: number) => {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/${workoutId}/exercise-details`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching exercise details:', error);
+    throw error;
+  }
+};
+
+// Add a new exercise to a workout
+export const createExerciseForWorkout = async (workoutId: number, exerciseData: ExistingWorktoutExercise) => {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/workouts/${workoutId}/exercise`, exerciseData, {
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding exercise:', error);
+    throw error;
   }
 };

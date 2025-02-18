@@ -14,16 +14,21 @@ export interface Exercise {
   sets: Set[];
 }
 
+export interface ExistingWorktoutExercise {
+  name: string;
+  sets: Set[];
+}
+
 export type RootStackParamList = {
-  index: undefined;
-  welcome: undefined;
-  previousRecords: undefined;
-  workoutContainer: undefined;
-  logExercise: undefined;
   createExercise: undefined;
   createWorkout: undefined;
-  exerciseSets: { exercise: string };
-  workoutDetails: { date: string };
+  index: undefined;
+  exerciseHistorByName: { exercise: string };
+  exerciseHistoryByDays: { date: string };
+  registerExistingExercise: undefined;
+  workoutCreator: undefined;
+  workoutHistory: undefined;
+  userRegistration: undefined;
 };
 
 export interface LoginResponse {

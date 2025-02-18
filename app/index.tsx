@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { API_BASE_URL } from './api-calls';
+import { API_BASE_URL } from '../constants/api-calls';
 
 const UserAuth = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [profilePic, setProfilePic] = useState<string | null>(null);
   const [errors, setErrors] = useState({ username: '', password: '', general: '' });
   const router = useRouter();
 
@@ -18,7 +17,7 @@ const UserAuth = () => {
       const token = await AsyncStorage.getItem('token');
       
       if (token) {
-        router.replace('/workoutContainer'); 
+        router.replace('/workoutCreator'); 
       }
     };
     checkToken();
@@ -32,7 +31,7 @@ const UserAuth = () => {
       await AsyncStorage.setItem('username', res.data.username);
       await AsyncStorage.setItem('profilePicture', res.data.profilePicture);
 
-      router.replace('/workoutContainer'); 
+      router.replace('/workoutCreator'); 
     } catch (err) {
       console.error('Login failed:', err);
       Alert.alert('Login Error' + err);
@@ -67,7 +66,7 @@ const UserAuth = () => {
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => router.push('/register')}>
+      <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => router.push('/userRegistration')}>
         <Text style={styles.buttonText}>Criar conta</Text>
       </TouchableOpacity>
     </View>

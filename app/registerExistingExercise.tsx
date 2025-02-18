@@ -1,8 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { Set } from './interfaces';
-import { addSet, fetchExercises, logWorkout } from './api-calls';
+import { Set } from '../constants/interfaces';
+import { addSet, fetchExercises, logExercise } from '../constants/api-calls';
 
 const LogExercise = () => {
   const [exercise, setExercise] = useState('');
@@ -10,28 +9,14 @@ const LogExercise = () => {
   const [setWeight, setSetWeight] = useState(0);
   const [sets, setSets] = useState<Set[]>([]);
   const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]); // New state for filtered exercises
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        try {
-          const storedUserId = await AsyncStorage.getItem('userId');
-          setUserId(Number(storedUserId));
-        } catch (error) {
-          console.error('Failed to retrieve user ID:', error);
-        }
-      }
-    };
-
     const loadExercises = async () => {
       await fetchExercises(setAvailableExercises);
     };
 
-    fetchUserData();
     loadExercises();
   }, []);
 
@@ -42,8 +27,8 @@ const LogExercise = () => {
     }
   };
 
-  const handleLogWorkout = async () => {
-    const result = await logWorkout(exercise, sets, null);
+  const handleLogExercise = async () => {
+    const result = await logExercise(exercise, sets, null);
     if (result.logged) {
       setExercise('');
       setSets([]);
@@ -128,7 +113,7 @@ const LogExercise = () => {
 
         <TouchableOpacity
           style={[styles.button, { opacity: isExerciseValid() ? 1 : 0.5 }]} // Only enable if the exercise is valid
-          onPress={handleLogWorkout}
+          onPress={handleLogExercise}
           disabled={!isExerciseValid()} // Disable button if exercise is invalid
         >
           <Text style={styles.buttonText}>Registrar Treino</Text>

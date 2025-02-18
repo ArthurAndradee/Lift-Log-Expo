@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList, Exercise } from './interfaces';
-import { fetchAllWorkouts, deleteWorkout } from './api-calls';
+import { RootStackParamList, Exercise } from '../constants/interfaces';
+import { fetchAllWorkouts, deleteWorkout } from '../constants/api-calls';
 import dayjs from 'dayjs';
 import React from 'react';
 
-type WorkoutDetailsScreenRouteProp = RouteProp<RootStackParamList, 'workoutDetails'>;
+type WorkoutDetailsScreenRouteProp = RouteProp<RootStackParamList, 'exerciseHistoryByDays'>;
 
 const WorkoutDetailsScreen = () => {
   const route = useRoute<WorkoutDetailsScreenRouteProp>();

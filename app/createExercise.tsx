@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
-import { Set } from './interfaces';
-import { addSet, logWorkout } from './api-calls';
+import { Set } from '../constants/interfaces';
+import { addSet, logExercise } from '../constants/api-calls';
 import { useRouter } from 'expo-router';
 import React from 'react';
 
@@ -38,7 +38,7 @@ const CreateExercise = () => {
   };
 
   const handleLogWorkout = async () => {
-    const result = await logWorkout(exercise, sets, null);
+    const result = await logExercise(exercise, sets, null);
 
     if (result.logged) {
       setExercise('');
