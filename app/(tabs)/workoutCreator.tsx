@@ -22,7 +22,7 @@ const WorkoutContainer = () => {
         <Text style={styles.buttonText}>Criar novo treino</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('createExercise')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('registerExistingWorkout')}>
         <Text style={styles.buttonText}>Registra treino existente</Text>
       </TouchableOpacity>
     </View>

@@ -151,15 +151,15 @@ export const deleteWorkout = async (workoutId: number) => {
 ////TEST ALL THE FUNCTIONS BELOW
 
 // Get all workouts for a user
-export const getWorkoutsForUser = async () => {
+export const getWorkoutsForUser = async (setAvailableWorkouts: (exercises: string[]) => void) => {
   const userId = await AsyncStorage.getItem("userId");
   const token = await AsyncStorage.getItem("token");
   
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/workoutss/${userId}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/workouts/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    return response.data;
+    setAvailableWorkouts(response.data.workouts);
   } catch (error) {
     console.error('Error fetching workouts:', error);
     throw error;
@@ -167,14 +167,15 @@ export const getWorkoutsForUser = async () => {
 };
 
 // Get all exercise names for a specific workout
-export const getExerciseNamesForWorkout = async (workoutId: number) => {
+export const getExerciseNamesForWorkout = async (workoutName: string, setWorkoutExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem("token");
+  const userId = await AsyncStorage.getItem("userId");
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/workouts/${workoutId}/exercises`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercises/${userId}/${workoutName}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    return response.data;
+    setWorkoutExercises(response.data.exercises);
   } catch (error) {
     console.error('Error fetching exercise names:', error);
     throw error;

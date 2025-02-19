@@ -49,6 +49,12 @@ const LogExercise = () => {
     }
   };
 
+  // Function to handle exercise selection from the dropdown
+  const handleExerciseSelection = (selectedExercise: string) => {
+    setExercise(selectedExercise);
+    setIsDropdownVisible(false);
+  };
+
   // Validation function to check if the selected exercise is valid
   const isExerciseValid = () => {
     return availableExercises.includes(exercise.trim());
@@ -65,21 +71,19 @@ const LogExercise = () => {
           onChangeText={handleSearchChange}
           placeholder="Pesquisar Exercício"
           onFocus={() => setIsDropdownVisible(true)} // Show dropdown when input is focused
-          onBlur={() => setIsDropdownVisible(false)} // Hide dropdown when input loses focus
         />
       </View>
 
       {/* Only show dropdown if the input is focused */}
       {isDropdownVisible && (
         <FlatList
-          data={filteredExercises.length > 0 ? filteredExercises : availableExercises}
+          data={exercise.length > 0 ? filteredExercises : availableExercises}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.dropdownItem}
               onPress={() => {
-                setExercise(item);
-                setIsDropdownVisible(false); // Hide the list after selecting an exercise
+                handleExerciseSelection(item)
               }}
             >
               <Text style={styles.dropdownText}>{item}</Text>

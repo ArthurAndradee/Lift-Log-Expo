@@ -11,25 +11,8 @@ const CreateExercise = () => {
   const [setReps, setSetReps] = useState(0);
   const [setWeight, setSetWeight] = useState(0);
   const [sets, setSets] = useState<Set[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
   const router = useRouter();
   
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        try {
-          const storedUserId = await AsyncStorage.getItem('userId');
-          setUserId(Number(storedUserId));
-        } catch (error) {
-          console.error('Failed to retrieve user ID:', error);
-        }
-      }
-    };
-
-    fetchUserId();
-  }, []);
-
   const handleAddSet = () => {
     const result = addSet(sets, setWeight, setReps, setSets);
     if (!result.valid) {
@@ -45,7 +28,7 @@ const CreateExercise = () => {
       setSets([]);
       setSetWeight(0);
       setSetReps(0);
-      router.push('/workoutContainer');
+      router.push('/workoutCreator');
     } else {
       Alert.alert('Erro', 'Falha ao registrar treino.');
     }

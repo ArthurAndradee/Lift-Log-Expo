@@ -84,7 +84,7 @@ const CreateWorkout = () => {
       )
     );
   };
-
+ 
   const handleCreateWorkout = async () => {
     if (!workoutName.trim()) {
       Alert.alert('Erro', 'O nome do treino não pode estar vazio.');
@@ -117,7 +117,7 @@ const CreateWorkout = () => {
         setSelectedExercises([]);
         setWorkoutName('');
 
-        router.push('/workoutContainer');
+        router.push('/workoutCreator');
       } else {
         Alert.alert('Erro', 'Falha ao registrar treino.');
       }

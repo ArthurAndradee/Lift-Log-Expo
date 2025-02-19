@@ -26,6 +26,7 @@ export type RootStackParamList = {
   exerciseHistorByName: { exercise: string };
   exerciseHistoryByDays: { date: string };
   registerExistingExercise: undefined;
+  registerExistingWorkout: undefined;
   workoutCreator: undefined;
   workoutHistory: undefined;
   userRegistration: undefined;
