@@ -11,12 +11,13 @@ const RegisterExistingWorkout = () => {
     }[]
   >([]);
   const [availableWorkouts, setAvailableWorkouts] = useState<string[]>([]);
+  const [workoutIds, setWorkoutIds] = useState<number[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>([]); // New state for filtered exercises
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
 
   useEffect(() => {
     const loadExercises = async () => {
-      await getWorkoutsForUser(setAvailableWorkouts);
+      await getWorkoutsForUser(setAvailableWorkouts, setWorkoutIds);
     };
 
     loadExercises();
@@ -57,17 +58,30 @@ const RegisterExistingWorkout = () => {
     );
   };
 
-  // const handleLogExercise = async () => {
-  //   // const result = await logExercise(exercise, sets, null);
-  //   // if (result.logged) {
-  //   //   setWorkout('');
-  //   //   setSets([]);
-  //   //   setSetWeight(0);
-  //   //   setSetReps(0);
-  //   // } else {
-  //   //   Alert.alert('Erro', 'Falha ao registrar treino.');
-  //   // }
-  // };
+  const handleRegisterWorkout = async () => {
+    if (!workout) {
+      Alert.alert('Erro', 'Por favor, selecione um treino antes de registrar.');
+      return;
+    }
+
+    const workoutIndex = availableWorkouts.indexOf(workout);
+    
+    if (workoutIndex === -1) {
+      Alert.alert('Erro', 'Treino inválido selecionado.');
+      return;
+    }
+
+    const workoutId = workoutIds[workoutIndex];
+    
+    try {
+      await Promise.all(
+        workoutExercisesData.map((exercise) => logExercise(exercise.name, exercise.sets, workoutId))
+      );
+      Alert.alert('Sucesso', 'Treino registrado com sucesso!');
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao registrar o treino.');
+    }
+  };
 
   const handleSearchChange = (text: string) => {
     setWorkout(text);
@@ -89,14 +103,10 @@ const RegisterExistingWorkout = () => {
           sets: [], // Initialize with empty sets
         }))
       );
-    })
+    });
 
     setWorkoutExercisesData([]);
   };
-
-  // Validation function to check if the selected exercise is valid
-
-  console.log(workoutExercisesData[0].sets);
 
   return (
     <View style={styles.container}>
@@ -112,7 +122,6 @@ const RegisterExistingWorkout = () => {
       />
       </View>
 
-      {/* Only show dropdown if the input is focused */}
       {isDropdownVisible && (
         <FlatList
           data={workout.length > 0 ? filteredWorkouts : availableWorkouts}
@@ -167,6 +176,9 @@ const RegisterExistingWorkout = () => {
         )}
         ListEmptyComponent={<Text style={styles.noResults}>Nenhuma treino escolhido.</Text>}
       />
+      <TouchableOpacity style={styles.button} onPress={handleRegisterWorkout}>
+        <Text style={styles.buttonText}>Criar Treino</Text>
+      </TouchableOpacity>
     </View>
   );
 };

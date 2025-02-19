@@ -151,7 +151,10 @@ export const deleteWorkout = async (workoutId: number) => {
 ////TEST ALL THE FUNCTIONS BELOW
 
 // Get all workouts for a user
-export const getWorkoutsForUser = async (setAvailableWorkouts: (exercises: string[]) => void) => {
+export const getWorkoutsForUser = async (
+  setAvailableWorkouts: (exercises: string[]) => void,
+  setWorkoutIds: (ids: number[]) => void) => {
+    
   const userId = await AsyncStorage.getItem("userId");
   const token = await AsyncStorage.getItem("token");
   
@@ -159,7 +162,17 @@ export const getWorkoutsForUser = async (setAvailableWorkouts: (exercises: strin
     const response = await axios.get(`${API_BASE_URL}/api/workouts/workouts/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    setAvailableWorkouts(response.data.workouts);
+
+    const workoutNames = response.data.workouts.map(
+      (workout: { id: number; name: string }) => workout.name
+    );
+
+    const workoutIds = response.data.workouts.map(
+      (workout: { id: number; name: string }) => workout.id
+    );
+
+    setAvailableWorkouts(workoutNames);
+    setWorkoutIds(workoutIds);
   } catch (error) {
     console.error('Error fetching workouts:', error);
     throw error;
@@ -175,6 +188,7 @@ export const getExerciseNamesForWorkout = async (workoutName: string, setWorkout
     const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercises/${userId}/${workoutName}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+
     setWorkoutExercises(response.data.exercises);
   } catch (error) {
     console.error('Error fetching exercise names:', error);
@@ -183,11 +197,12 @@ export const getExerciseNamesForWorkout = async (workoutName: string, setWorkout
 };
 
 // Get detailed exercise information for a workout
-export const getExerciseDetailsForWorkout = async (workoutId: number) => {
+export const getExerciseDetailsForWorkout = async (workoutName: string) => {
   const token = await AsyncStorage.getItem("token");
+  const userId = await AsyncStorage.getItem("userId");
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/workouts/${workoutId}/exercise-details`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercise-details/${userId}/${workoutName}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
@@ -198,11 +213,12 @@ export const getExerciseDetailsForWorkout = async (workoutId: number) => {
 };
 
 // Add a new exercise to a workout
-export const createExerciseForWorkout = async (workoutId: number, exerciseData: ExistingWorktoutExercise) => {
+export const createExerciseForWorkout = async (workoutName: string, exerciseData: ExistingWorktoutExercise) => {
   const token = await AsyncStorage.getItem("token");
+  const userId = await AsyncStorage.getItem("userId");
 
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/workouts/${workoutId}/exercise`, exerciseData, {
+    const response = await axios.post(`${API_BASE_URL}/api/workouts/workout/exercise/${userId}/${workoutName}/`, exerciseData, {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
     return response.data;
