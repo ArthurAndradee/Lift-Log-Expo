@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from '../constants/interfaces';
-import { addSet, fetchExercises, logExercise } from '../constants/api-calls';
+import { addSet, getExercisesNames, logExercise } from '../constants/api-calls';
 
 const LogExercise = () => {
   const [exercise, setExercise] = useState('');
@@ -14,7 +14,7 @@ const LogExercise = () => {
 
   useEffect(() => {
     const loadExercises = async () => {
-      await fetchExercises(setAvailableExercises);
+      await getExercisesNames(setAvailableExercises);
     };
 
     loadExercises();

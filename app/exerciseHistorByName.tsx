@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, Alert, SectionList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
-import { fetchPreviousRecords, deleteWorkout } from '../constants/api-calls';
+import { fetchExerciseInfo, deleteExercise } from '../constants/api-calls';
 import { Exercise } from '../constants/interfaces';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
@@ -20,14 +20,14 @@ const ExerciseSets = () => {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   useEffect(() => {
-    fetchPreviousRecords(exercise, setPreviousRecord);
+    fetchExerciseInfo(exercise, setPreviousRecord);
     console.log(previousRecord)
   }, [exercise]);
 
-  const handleDeleteWorkout = async (workoutId: number) => {
-    const isDeleted = await deleteWorkout(workoutId);
+  const handledeleteExercise = async (workoutId: number) => {
+    const isDeleted = await deleteExercise(workoutId);
     if (isDeleted) {
-      fetchPreviousRecords(exercise, setPreviousRecord);
+      fetchExerciseInfo(exercise, setPreviousRecord);
     } else {
       Alert.alert('Error', 'Failed to delete workout');
     }
@@ -130,7 +130,7 @@ const sections = Object.keys(groupedRecords)
             {index === section.data.length - 1 && (
               <TouchableOpacity
                 style={styles.deleteButton}
-                onPress={() => handleDeleteWorkout(section.workoutId)}
+                onPress={() => handledeleteExercise(section.workoutId)}
               >
                 <Text style={styles.deleteButtonText}>Deletar Sets</Text>
               </TouchableOpacity>

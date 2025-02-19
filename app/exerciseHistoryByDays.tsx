@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList, Exercise } from '../constants/interfaces';
-import { fetchAllWorkouts, deleteWorkout } from '../constants/api-calls';
+import { fetchAllExercisesInfo, deleteExercise } from '../constants/api-calls';
 import dayjs from 'dayjs';
 import React from 'react';
 
@@ -14,7 +14,7 @@ const WorkoutDetailsScreen = () => {
   const [groupedWorkouts, setGroupedWorkouts] = useState<{ [key: string]: Exercise[] }>({});
 
   useEffect(() => {
-    fetchAllWorkouts((allWorkouts) => {
+    fetchAllExercisesInfo((allWorkouts) => {
       // Filter workouts by date
       const filtered = allWorkouts.filter(
         (workout) => dayjs(workout.date).format('DD/MM/YYYY') === date
@@ -34,11 +34,11 @@ const WorkoutDetailsScreen = () => {
     });
   }, [date]);
 
-  const handleDeleteWorkout = async (workoutId: number) => {
-    const isDeleted = await deleteWorkout(workoutId);
+  const handledeleteExercise = async (workoutId: number) => {
+    const isDeleted = await deleteExercise(workoutId);
     if (isDeleted) {
       // Refresh workouts after deletion
-      fetchAllWorkouts((allWorkouts) => {
+      fetchAllExercisesInfo((allWorkouts) => {
         const filtered = allWorkouts.filter(
           (workout) => dayjs(workout.date).format('DD/MM/YYYY') === date
         );
@@ -80,7 +80,7 @@ const WorkoutDetailsScreen = () => {
             ))}
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={() => handleDeleteWorkout(items[0].exerciseId)}
+              onPress={() => handledeleteExercise(items[0].exerciseId)}
             >
               <Text style={styles.deleteButtonText}>Deletar Set</Text>
             </TouchableOpacity>

@@ -26,8 +26,9 @@ export const addSet = (
   };
 };
 
-export const fetchExercises = async (setAvailableExercises: (exercises: string[]) => void) => {
+export const getExercisesNames = async (setAvailableExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem("token");
+
   if (!token) {
     console.error("User is not authenticated.");
     return;
@@ -85,7 +86,7 @@ export const logExercise = async (exercise: string, sets: Set[], workoutId: numb
   }
 };
 
-export const fetchPreviousRecords = async (exercise: string, setPreviousRecord: (records: Exercise[]) => void) => {
+export const fetchExerciseInfo = async (exercise: string, setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
   
@@ -106,7 +107,7 @@ export const fetchPreviousRecords = async (exercise: string, setPreviousRecord: 
   }
 };
 
-export const fetchAllWorkouts = async (setPreviousRecord: (records: Exercise[]) => void) => {
+export const fetchAllExercisesInfo = async (setPreviousRecord: (records: Exercise[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
@@ -121,13 +122,14 @@ export const fetchAllWorkouts = async (setPreviousRecord: (records: Exercise[]) 
         headers: { Authorization: `Bearer ${token}` },
       }
     );
+
     setPreviousRecord(response.data);
   } catch (error) {
     console.error("Error fetching previous records:", error);
   }
 };
 
-export const deleteWorkout = async (workoutId: number) => {
+export const deleteExercise = async (workoutId: number) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 

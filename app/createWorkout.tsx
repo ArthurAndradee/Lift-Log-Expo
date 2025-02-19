@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from "../constants/interfaces";
-import { createWorkout, fetchExercises, logExercise } from '../constants/api-calls';
+import { createWorkout, getExercisesNames, logExercise } from '../constants/api-calls';
 import { useRouter } from 'expo-router';
 
 const CreateWorkout = () => {
@@ -19,7 +19,7 @@ const CreateWorkout = () => {
 
   useEffect(() => {
     const loadExercises = async () => {
-      await fetchExercises(setAvailableExercises);
+      await getExercisesNames(setAvailableExercises);
     };
     loadExercises();
   }, []);

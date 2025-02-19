@@ -1,50 +1,32 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { fetchExercises, fetchAllWorkouts } from '../../constants/api-calls';
+import { getExercisesNames, fetchAllExercisesInfo } from '../../constants/api-calls';
 import { RootStackParamList, Exercise } from '../../constants/interfaces';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import dayjs from 'dayjs';
 import React from 'react';
 
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+
 const PreviousRecords = () => {
-  const [availableExercises, setAvailableExercises] = useState<string[]>([]);
-  const [workoutHistory, setWorkoutHistory] = useState<Exercise[]>([]);
+  const [availableWorkouts, setAvailableWorkouts] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
   const [searchMode, setSearchMode] = useState<'exercise' | 'workout'>('exercise');
   const [workoutDays, setWorkoutDays] = useState<string[]>([]);
 
-  type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
-    const fetchUserId = async () => {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        try {
-          const storedUserId = await AsyncStorage.getItem('userId');
-          setUserId(Number(storedUserId));
-        } catch (error) {
-          console.error('Failed to decode user ID:', error);
-        }
-      }
-    };
-
-    fetchUserId();
-  }, []);
-
-  useEffect(() => {
-    if (userId && searchMode === 'exercise') {
-      fetchExercises(setAvailableExercises);
+    if (searchMode === 'exercise') {
+      getExercisesNames(setAvailableWorkouts);
     }
-  }, [userId, searchMode]);
+  }, [searchMode]);
 
   useEffect(() => {
-    if (userId && searchMode === 'workout') {
-      fetchAllWorkouts((workouts) => {
+    if (searchMode === 'workout') {
+      fetchAllExercisesInfo((workouts) => {
         // Group workouts by date
         const groupedWorkouts: Record<string, Exercise[]> = {};
   
@@ -61,17 +43,16 @@ const PreviousRecords = () => {
         const uniqueDates = Object.keys(groupedWorkouts);
   
         setWorkoutDays(uniqueDates);
-        setWorkoutHistory(workouts);
       });
     }
-  }, [userId, searchMode]);
+  }, [searchMode]);
 
   useEffect(() => {
-    const filtered = availableExercises.filter(exercise =>
+    const filtered = availableWorkouts.filter(exercise =>
       exercise.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredExercises(filtered);
-  }, [searchQuery, availableExercises]);
+  }, [searchQuery, availableWorkouts]);
 
   const handleExerciseSelection = (exercise: string) => {
     navigation.navigate('exerciseHistorByName', { exercise });
