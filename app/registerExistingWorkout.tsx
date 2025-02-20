@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from '../constants/interfaces';
 import { addSet, getExerciseNamesForWorkout, getWorkoutsForUser, logExercise } from '../constants/api-calls';
+import { useRouter } from 'expo-router';
 
 const RegisterExistingWorkout = () => {
   const [workout, setWorkout] = useState('');
@@ -14,6 +15,7 @@ const RegisterExistingWorkout = () => {
   const [workoutIds, setWorkoutIds] = useState<number[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>([]); // New state for filtered exercises
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
+  const router = useRouter();
 
   useEffect(() => {
     const loadExercises = async () => {
@@ -78,6 +80,9 @@ const RegisterExistingWorkout = () => {
         workoutExercisesData.map((exercise) => logExercise(exercise.name, exercise.sets, workoutId))
       );
       Alert.alert('Sucesso', 'Treino registrado com sucesso!');
+
+      router.push('/workoutCreator');
+
     } catch (error) {
       Alert.alert('Erro', 'Falha ao registrar o treino.');
     }
@@ -100,7 +105,7 @@ const RegisterExistingWorkout = () => {
       setWorkoutExercisesData(
         exerciseNames.map((name) => ({
           name,
-          sets: [], // Initialize with empty sets
+          sets: [],
         }))
       );
     });
@@ -119,6 +124,7 @@ const RegisterExistingWorkout = () => {
         onChangeText={handleSearchChange}
         placeholder="Pesquisar Treino"
         onFocus={() => setIsDropdownVisible(true)}
+        onBlur={() => setTimeout(() => setIsDropdownVisible(false), 100)}
       />
       </View>
 

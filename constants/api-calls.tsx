@@ -51,7 +51,7 @@ export const createWorkout = async (workoutName: string) => {
     const response = await axios.post(`${API_BASE_URL}/api/workouts/create` , { userId, workoutName }, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;  // Assuming this contains { workoutId }
+    return response.data;  
   } catch (error) {
     console.error('Error creating workout:', error);
     throw error;
@@ -148,9 +148,6 @@ export const deleteWorkout = async (workoutId: number) => {
   }
 };
 
-////TEST ALL THE FUNCTIONS BELOW
-
-// Get all workouts for a user
 export const getWorkoutsForUser = async (
   setAvailableWorkouts: (exercises: string[]) => void,
   setWorkoutIds: (ids: number[]) => void) => {
@@ -179,7 +176,6 @@ export const getWorkoutsForUser = async (
   }
 };
 
-// Get all exercise names for a specific workout
 export const getExerciseNamesForWorkout = async (workoutName: string, setWorkoutExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
@@ -196,7 +192,7 @@ export const getExerciseNamesForWorkout = async (workoutName: string, setWorkout
   }
 };
 
-// Get detailed exercise information for a workout
+// THIS ONE LEFT
 export const getExerciseDetailsForWorkout = async (workoutName: string) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
@@ -212,7 +208,6 @@ export const getExerciseDetailsForWorkout = async (workoutName: string) => {
   }
 };
 
-// Add a new exercise to a workout
 export const createExerciseForWorkout = async (workoutName: string, exerciseData: ExistingWorktoutExercise) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");

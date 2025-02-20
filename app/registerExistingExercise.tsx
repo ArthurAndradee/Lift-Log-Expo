@@ -70,7 +70,8 @@ const LogExercise = () => {
           value={exercise}
           onChangeText={handleSearchChange}
           placeholder="Pesquisar Exercício"
-          onFocus={() => setIsDropdownVisible(true)} // Show dropdown when input is focused
+          onFocus={() => setIsDropdownVisible(true)}
+          onBlur={() => setTimeout(() => setIsDropdownVisible(false), 100)}
         />
       </View>
 
