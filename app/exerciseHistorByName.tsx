@@ -9,13 +9,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 
 type RouteParams = {
-  workoutDetails: { workoutName: string, workoutId: number };
+  workoutDetailsFilteredByDay: { workoutName: string, workoutId: number };
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 const WorkoutInstances = () => {
-  const route = useRoute<RouteProp<RouteParams, 'workoutDetails'>>();
+  const route = useRoute<RouteProp<RouteParams, 'workoutDetailsFilteredByDay'>>();
   const { workoutName, workoutId } = route.params;
   const [previousRecord, setPreviousRecord] = useState<WorkoutResponse[]>([]);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -104,7 +104,7 @@ const WorkoutInstances = () => {
             <View style={styles.recordItem}>
               <Text style={styles.recordText}>{formatDate(item.date)}</Text>
               <TouchableOpacity style={styles.detailsButton} 
-              onPress={() => navigation.navigate('workoutDetails', { workoutId: item.id, workoutName: item.name })}>
+              onPress={() => navigation.navigate('workoutDetailsFilteredByDay', { workoutId: item.id, workoutName: item.name })}>
                 <Text style={styles.detailsButtonText}>Ver detalhes</Text>
               </TouchableOpacity>
             </View>

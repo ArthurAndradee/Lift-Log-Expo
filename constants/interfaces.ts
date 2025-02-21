@@ -29,7 +29,7 @@ export type RootStackParamList = {
   workoutCreator: undefined;
   workoutHistory: undefined;
   userRegistration: undefined;
-  workoutDetails: { workoutId: number, workoutName: string };
+  workoutDetailsFilteredByDay: { workoutId: number, workoutName: string };
 };
 
 export interface LoginResponse {
