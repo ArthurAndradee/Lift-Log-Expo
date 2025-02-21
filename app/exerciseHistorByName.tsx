@@ -11,6 +11,7 @@ import { useNavigation } from 'expo-router';
 type RouteParams = {
   workoutDetails: { workoutName: string, workoutId: number };
 };
+
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 const WorkoutInstances = () => {

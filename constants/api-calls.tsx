@@ -158,7 +158,7 @@ export const getWorkoutsForUser = async () => {
     const response = await axios.get(`${API_BASE_URL}/api/workouts/workouts/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-
+    console.log(response.data.workouts)
     return (response.data.workouts);
   } catch (error) {
     console.error('Error fetching workouts:', error);
