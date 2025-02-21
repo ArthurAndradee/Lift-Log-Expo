@@ -1,29 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from '../constants/interfaces';
-import { addSet, getExerciseNamesForWorkout, getWorkoutsForUser, logExercise } from '../constants/api-calls';
+import { getExerciseNamesForWorkout, getWorkoutsForUser, logExercise } from '../constants/api-calls';
 import { useRouter } from 'expo-router';
 
 const RegisterExistingWorkout = () => {
-  const [workout, setWorkout] = useState('');
-  const [workoutExercisesData, setWorkoutExercisesData] = useState<{ 
-      name: string; 
-      sets: Set[];
-    }[]
-  >([]);
-  const [availableWorkouts, setAvailableWorkouts] = useState<string[]>([]);
   const [workoutIds, setWorkoutIds] = useState<number[]>([]);
+  const [workoutExercisesData, setWorkoutExercisesData] = useState<{ 
+    name: string; 
+    sets: Set[];
+  }[]>([]);
+  const [availableWorkouts, setAvailableWorkouts] = useState<string[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>([]); // New state for filtered exercises
+  const [workoutOption, setWorkoutOption] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false); // Control visibility of the dropdown
   const router = useRouter();
 
   useEffect(() => {
     const loadExercises = async () => {
-      await getWorkoutsForUser(setAvailableWorkouts, setWorkoutIds);
+      const response = await getWorkoutsForUser();
+      
+      if (response) {
+        setWorkoutIds(response.map((workout: { id: number; }) => workout.id));
+        setAvailableWorkouts(response.map((workout: { name: string; }) => workout.name));
+      }
     };
-
+  
     loadExercises();
   }, []);
+  
+  
 
   const addSetToExercise = (exerciseName: string) => {
     setWorkoutExercisesData((prevExercises) =>
@@ -61,12 +67,12 @@ const RegisterExistingWorkout = () => {
   };
 
   const handleRegisterWorkout = async () => {
-    if (!workout) {
+    if (!workoutOption) {
       Alert.alert('Erro', 'Por favor, selecione um treino antes de registrar.');
       return;
     }
 
-    const workoutIndex = availableWorkouts.indexOf(workout);
+    const workoutIndex = availableWorkouts.indexOf(workoutOption);
     
     if (workoutIndex === -1) {
       Alert.alert('Erro', 'Treino inválido selecionado.');
@@ -89,7 +95,7 @@ const RegisterExistingWorkout = () => {
   };
 
   const handleSearchChange = (text: string) => {
-    setWorkout(text);
+    setWorkoutOption(text);
     if (text) {
       const filtered = availableWorkouts.filter((ex) => ex.toLowerCase().includes(text.toLowerCase()));
       setFilteredWorkouts(filtered);
@@ -99,7 +105,7 @@ const RegisterExistingWorkout = () => {
   };
 
   const handleWorkoutSelection = (selectedWorkout: string) => {
-    setWorkout(selectedWorkout);
+    setWorkoutOption(selectedWorkout);
     setIsDropdownVisible(false);
     getExerciseNamesForWorkout(selectedWorkout, (exerciseNames) => {
       setWorkoutExercisesData(
@@ -115,22 +121,21 @@ const RegisterExistingWorkout = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registrar um treino Exisatente</Text>
+      <Text style={styles.title}>Registrar um treino Existente</Text>
 
       <View style={styles.searchBox}>
       <TextInput
         style={[styles.input, styles.flex1]}
-        value={workout}
+        value={workoutOption}
         onChangeText={handleSearchChange}
         placeholder="Pesquisar Treino"
         onFocus={() => setIsDropdownVisible(true)}
-        onBlur={() => setTimeout(() => setIsDropdownVisible(false), 100)}
       />
       </View>
 
       {isDropdownVisible && (
         <FlatList
-          data={workout.length > 0 ? filteredWorkouts : availableWorkouts}
+          data={workoutOption.length > 0 ? filteredWorkouts : availableWorkouts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity

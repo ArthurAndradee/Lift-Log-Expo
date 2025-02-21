@@ -1,57 +1,65 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { getExercisesNames, fetchAllExercisesInfo } from '../../constants/api-calls';
-import { RootStackParamList, Exercise } from '../../constants/interfaces';
+import { getWorkoutsForUser } from '../../constants/api-calls';
+import { RootStackParamList, Exercise, WorkoutReponse } from '../../constants/interfaces';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import dayjs from 'dayjs';
 import React from 'react';
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;  
 
 const PreviousRecords = () => {
-  const [availableWorkouts, setAvailableWorkouts] = useState<string[]>([]);
+  const [availableWorkouts, setAvailableWorkouts] = useState<WorkoutReponse[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredExercises, setFilteredExercises] = useState<string[]>([]);
+  const [filteredWorkouts, setFilteredWorkouts] = useState<string[]>([]);
   const [searchMode, setSearchMode] = useState<'exercise' | 'workout'>('exercise');
   const [workoutDays, setWorkoutDays] = useState<string[]>([]);
 
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   useEffect(() => {
-    if (searchMode === 'exercise') {
-      getExercisesNames(setAvailableWorkouts);
-    }
+    const loadExercises = async () => {
+      const response = await getWorkoutsForUser();
+      
+      if (response) {
+        setAvailableWorkouts(response);
+      }
+    };
+
+    loadExercises();
   }, [searchMode]);
 
   useEffect(() => {
     if (searchMode === 'workout') {
-      fetchAllExercisesInfo((workouts) => {
-        // Group workouts by date
-        const groupedWorkouts: Record<string, Exercise[]> = {};
+      // Sort workouts by date (most recent first)
+      const sortedWorkouts = [...availableWorkouts].sort((a, b) =>
+        dayjs(b.date).valueOf() - dayjs(a.date).valueOf()
+      );
   
-        workouts.forEach((workout) => {
-          const formattedDate = dayjs(workout.date).format('DD/MM/YYYY');
+      // Group workouts by formatted date
+      const groupedWorkouts: Record<string, WorkoutReponse[]> = {};
   
-          if (!groupedWorkouts[formattedDate]) {
-            groupedWorkouts[formattedDate] = [];
-          }
-          groupedWorkouts[formattedDate].push(workout);
-        });
+      sortedWorkouts.forEach((workout) => {
+        const formattedDate = dayjs(workout.date).format('DD/MM/YYYY');
   
-        // Extract unique formatted dates
-        const uniqueDates = Object.keys(groupedWorkouts);
-  
-        setWorkoutDays(uniqueDates);
+        if (!groupedWorkouts[formattedDate]) {
+          groupedWorkouts[formattedDate] = [];
+        }
+        groupedWorkouts[formattedDate].push(workout);
       });
+  
+      // Extract and set unique sorted dates
+      setWorkoutDays(Object.keys(groupedWorkouts));
     }
-  }, [searchMode]);
+  }, [searchMode, availableWorkouts]);
+  
 
   useEffect(() => {
-    const filtered = availableWorkouts.filter(exercise =>
+    const filtered = availableWorkouts.map(workout => workout.name).filter(exercise =>
       exercise.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredExercises(filtered);
+    setFilteredWorkouts(filtered);
   }, [searchQuery, availableWorkouts]);
 
   const handleExerciseSelection = (exercise: string) => {
@@ -61,7 +69,7 @@ const PreviousRecords = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        {searchMode === 'exercise' ? 'Pesquise por exercícios anteriores' : 'Histórico de Treinos'}
+        {searchMode === 'exercise' ? 'Pesquise por treinos anteriores' : 'Histórico de Treinos'}
       </Text>
 
       {searchMode === 'exercise' && (
@@ -69,13 +77,13 @@ const PreviousRecords = () => {
           style={styles.input}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Pesquise por um exercício"
+          placeholder="Pesquise por um treino"
         />
       )}
 
       {searchMode === 'exercise' ? (
         <FlatList
-          data={filteredExercises}
+          data={filteredWorkouts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.exerciseItem} onPress={() => handleExerciseSelection(item)}>

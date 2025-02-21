@@ -80,7 +80,7 @@ const WorkoutDetailsScreen = () => {
             ))}
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={() => handledeleteExercise(items[0].exerciseId)}
+              onPress={() => handledeleteExercise(items[0].id)}
             >
               <Text style={styles.deleteButtonText}>Deletar Set</Text>
             </TouchableOpacity>

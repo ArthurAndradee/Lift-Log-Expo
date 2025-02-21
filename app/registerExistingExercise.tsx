@@ -71,7 +71,6 @@ const LogExercise = () => {
           onChangeText={handleSearchChange}
           placeholder="Pesquisar Exercício"
           onFocus={() => setIsDropdownVisible(true)}
-          onBlur={() => setTimeout(() => setIsDropdownVisible(false), 100)}
         />
       </View>
 

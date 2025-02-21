@@ -1,17 +1,16 @@
 export interface Set {
-    setNumber: number;
-    reps:number;
-    weight: number;
+  setNumber: number;
+  reps:number;
+  weight: number;
 }
   
 export interface Exercise {
+  id: number; 
   date: string;
   name: string;
   reps: number;
   setNumber: number;
   weight: number;
-  exerciseId: number;
-  sets: Set[];
 }
 
 export interface ExistingWorktoutExercise {
@@ -30,6 +29,7 @@ export type RootStackParamList = {
   workoutCreator: undefined;
   workoutHistory: undefined;
   userRegistration: undefined;
+  workoutDetails: { workoutName: string };
 };
 
 export interface LoginResponse {
@@ -40,4 +40,10 @@ export interface LoginResponse {
     email: string;
     profilePicture: Blob;
   };
+}
+
+export interface WorkoutReponse {
+  id: number;
+  name: string;
+  date: string;
 }

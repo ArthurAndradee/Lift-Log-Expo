@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Set, Exercise, ExistingWorktoutExercise } from "./interfaces";
+import { Set, Exercise, ExistingWorktoutExercise, WorkoutReponse } from "./interfaces";
 import { Alert } from "react-native";
 
 export const API_BASE_URL = "http://10.0.2.2:5000";
@@ -150,10 +150,7 @@ export const deleteExercise = async (workoutId: number) => {
   }
 };
 
-export const getWorkoutsForUser = async (
-  setAvailableWorkouts: (exercises: string[]) => void,
-  setWorkoutIds: (ids: number[]) => void) => {
-    
+export const getWorkoutsForUser = async () => {
   const userId = await AsyncStorage.getItem("userId");
   const token = await AsyncStorage.getItem("token");
   
@@ -162,16 +159,7 @@ export const getWorkoutsForUser = async (
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    const workoutNames = response.data.workouts.map(
-      (workout: { id: number; name: string }) => workout.name
-    );
-
-    const workoutIds = response.data.workouts.map(
-      (workout: { id: number; name: string }) => workout.id
-    );
-
-    setAvailableWorkouts(workoutNames);
-    setWorkoutIds(workoutIds);
+    return (response.data.workouts);
   } catch (error) {
     console.error('Error fetching workouts:', error);
     throw error;
@@ -203,6 +191,9 @@ export const getExerciseDetailsForWorkout = async (workoutName: string) => {
     const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercise-details/${userId}/${workoutName}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+    //{"details": [{"exercise": "Arremesso de espada", "id": 23, "reps": 13, "setNumber": 1, "weight": "31.00"}, {"exercise": "Levantamento de bola de canhao", "id": 24, "reps": 12, "setNumber": 1, "weight": "21.00"}, {"exercise": "Puxada de barril", "id": 25, "reps": 14, "setNumber": 1, "weight": "41.00"}, {"exercise": "Arremesso de espada", "id": 23, "reps": 31, "setNumber": 2, "weight": "13.00"}, {"exercise": "Levantamento de bola de canhao", "id": 24, "reps": 21, "setNumber": 2, "weight": "12.00"}, {"exercise": "Puxada de barril", "id": 25, "reps": 41, "setNumber": 2, "weight": "14.00"}]}
+    console.log(response.data)
+
     return response.data;
   } catch (error) {
     console.error('Error fetching exercise details:', error);
