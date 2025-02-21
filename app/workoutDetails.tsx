@@ -6,19 +6,19 @@ import { Exercise } from '../constants/interfaces';
 import React from 'react';
 
 type RouteParams = {
-  workoutDetails: { workoutName: string };
+  workoutDetails: { workoutName: string, workoutId: number };
 };
 
 const WorkoutDetails = () => {
   const route = useRoute<RouteProp<RouteParams, 'workoutDetails'>>();
   const navigation = useNavigation();
-  const { workoutName } = route.params;
+  const { workoutName, workoutId } = route.params;
   const [groupedExercises, setGroupedExercises] = useState<Record<number, Exercise[]>>({});
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await getExerciseDetailsForWorkout(workoutName);
+        const response = await getExerciseDetailsForWorkout(workoutId);
 
         // Group exercises by ID
         const grouped = response.details.reduce((acc: Record<number, Exercise[]>, exercise: Exercise) => {
@@ -54,8 +54,8 @@ const WorkoutDetails = () => {
                 {exercises.map((set) => (
                   <View key={`${set.id}-${set.setNumber}`} style={styles.exerciseCard}>
                     <Text style={styles.exerciseText}>Série: {set.setNumber}</Text>
-                    <Text style={styles.exerciseText}>Reps: {set.reps}</Text>
                     <Text style={styles.exerciseText}>Peso: {set.weight} kg</Text>
+                    <Text style={styles.exerciseText}>Reps: {set.reps}</Text>
                   </View>
                 ))}
               </View>

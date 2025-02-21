@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Set, Exercise, ExistingWorktoutExercise, WorkoutReponse } from "./interfaces";
+import { Set, Exercise, ExistingWorktoutExercise } from "./interfaces";
 import { Alert } from "react-native";
 
 export const API_BASE_URL = "http://10.0.2.2:5000";
@@ -81,7 +81,7 @@ export const logExercise = async (exercise: string, sets: Set[], workoutId: numb
 
     return { logged: true, exerciseId: response.data.exerciseId };
   } catch (error) {
-    console.error("Failed to log workout:", error);
+    console.error("Failed to log exercise:", error);
     return { logged: false, exerciseId: null };
   }
 };
@@ -166,12 +166,12 @@ export const getWorkoutsForUser = async () => {
   }
 };
 
-export const getExerciseNamesForWorkout = async (workoutName: string, setWorkoutExercises: (exercises: string[]) => void) => {
+export const getExerciseNamesForWorkout = async (workoutId: number, setWorkoutExercises: (exercises: string[]) => void) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercises/${userId}/${workoutName}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercises/${userId}/${workoutId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -183,16 +183,14 @@ export const getExerciseNamesForWorkout = async (workoutName: string, setWorkout
 };
 
 // THIS ONE LEFT
-export const getExerciseDetailsForWorkout = async (workoutName: string) => {
+export const getExerciseDetailsForWorkout = async (workoutId: number) => {
   const token = await AsyncStorage.getItem("token");
   const userId = await AsyncStorage.getItem("userId");
 
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercise-details/${userId}/${workoutName}`, {
+    const response = await axios.get(`${API_BASE_URL}/api/workouts/workout/exercise-details/${userId}/${workoutId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    //{"details": [{"exercise": "Arremesso de espada", "id": 23, "reps": 13, "setNumber": 1, "weight": "31.00"}, {"exercise": "Levantamento de bola de canhao", "id": 24, "reps": 12, "setNumber": 1, "weight": "21.00"}, {"exercise": "Puxada de barril", "id": 25, "reps": 14, "setNumber": 1, "weight": "41.00"}, {"exercise": "Arremesso de espada", "id": 23, "reps": 31, "setNumber": 2, "weight": "13.00"}, {"exercise": "Levantamento de bola de canhao", "id": 24, "reps": 21, "setNumber": 2, "weight": "12.00"}, {"exercise": "Puxada de barril", "id": 25, "reps": 41, "setNumber": 2, "weight": "14.00"}]}
-    console.log(response.data)
 
     return response.data;
   } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Alert, StyleSheet } from 'react-native';
 import { Set } from '../constants/interfaces';
-import { getExerciseNamesForWorkout, getWorkoutsForUser, logExercise } from '../constants/api-calls';
+import { createWorkout, getExerciseNamesForWorkout, getWorkoutsForUser, logExercise } from '../constants/api-calls';
 import { useRouter } from 'expo-router';
 
 const RegisterExistingWorkout = () => {
@@ -28,8 +28,6 @@ const RegisterExistingWorkout = () => {
   
     loadExercises();
   }, []);
-  
-  
 
   const addSetToExercise = (exerciseName: string) => {
     setWorkoutExercisesData((prevExercises) =>
@@ -71,16 +69,15 @@ const RegisterExistingWorkout = () => {
       Alert.alert('Erro', 'Por favor, selecione um treino antes de registrar.');
       return;
     }
+    const workoutResponse = await createWorkout(workoutOption);
 
-    const workoutIndex = availableWorkouts.indexOf(workoutOption);
+    const workoutId = workoutResponse.workoutId;
     
-    if (workoutIndex === -1) {
+    if (workoutId === -1) {
       Alert.alert('Erro', 'Treino inválido selecionado.');
       return;
     }
 
-    const workoutId = workoutIds[workoutIndex];
-    
     try {
       await Promise.all(
         workoutExercisesData.map((exercise) => logExercise(exercise.name, exercise.sets, workoutId))
@@ -107,7 +104,14 @@ const RegisterExistingWorkout = () => {
   const handleWorkoutSelection = (selectedWorkout: string) => {
     setWorkoutOption(selectedWorkout);
     setIsDropdownVisible(false);
-    getExerciseNamesForWorkout(selectedWorkout, (exerciseNames) => {
+    
+    const workoutIndex = availableWorkouts.indexOf(selectedWorkout);
+    if (workoutIndex === -1) return;
+
+    const workoutId = workoutIds[workoutIndex];
+    
+    // Fetch the exercise names using the workoutId
+    getExerciseNamesForWorkout(workoutId, (exerciseNames) => {
       setWorkoutExercisesData(
         exerciseNames.map((name) => ({
           name,
@@ -115,8 +119,6 @@ const RegisterExistingWorkout = () => {
         }))
       );
     });
-
-    setWorkoutExercisesData([]);
   };
 
   return (
@@ -124,13 +126,13 @@ const RegisterExistingWorkout = () => {
       <Text style={styles.title}>Registrar um treino Existente</Text>
 
       <View style={styles.searchBox}>
-      <TextInput
-        style={[styles.input, styles.flex1]}
-        value={workoutOption}
-        onChangeText={handleSearchChange}
-        placeholder="Pesquisar Treino"
-        onFocus={() => setIsDropdownVisible(true)}
-      />
+        <TextInput
+          style={[styles.input, styles.flex1]}
+          value={workoutOption}
+          onChangeText={handleSearchChange}
+          placeholder="Pesquisar Treino"
+          onFocus={() => setIsDropdownVisible(true)}
+        />
       </View>
 
       {isDropdownVisible && (

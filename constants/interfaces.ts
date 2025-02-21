@@ -22,14 +22,14 @@ export type RootStackParamList = {
   createExercise: undefined;
   createWorkout: undefined;
   index: undefined;
-  exerciseHistorByName: { exercise: string };
-  exerciseHistoryByDays: { date: string };
+  exerciseHistorByName: { workoutName: string, workoutId: number };
+  exerciseHistoryByDays: { date: string, workoutId: number };
   registerExistingExercise: undefined;
   registerExistingWorkout: undefined;
   workoutCreator: undefined;
   workoutHistory: undefined;
   userRegistration: undefined;
-  workoutDetails: { workoutName: string };
+  workoutDetails: { workoutId: number, workoutName: string };
 };
 
 export interface LoginResponse {
@@ -42,7 +42,7 @@ export interface LoginResponse {
   };
 }
 
-export interface WorkoutReponse {
+export interface WorkoutResponse {
   id: number;
   name: string;
   date: string;

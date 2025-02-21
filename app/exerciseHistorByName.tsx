@@ -2,37 +2,38 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getExerciseDetailsForWorkout, getWorkoutsForUser } from '../constants/api-calls';
-import { RootStackParamList, WorkoutReponse } from '../constants/interfaces';
+import { RootStackParamList, WorkoutResponse } from '../constants/interfaces';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 
 type RouteParams = {
-  workoutDetails: { exercise: string };
+  workoutDetails: { workoutName: string, workoutId: number };
 };
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 const WorkoutInstances = () => {
   const route = useRoute<RouteProp<RouteParams, 'workoutDetails'>>();
-  const { exercise } = route.params;
-  const [previousRecord, setPreviousRecord] = useState<WorkoutReponse[]>([]);
+  const { workoutName, workoutId } = route.params;
+  const [previousRecord, setPreviousRecord] = useState<WorkoutResponse[]>([]);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  
 
   useEffect(() => {
     const fetchWorkouts = async () => {
       const availableWorkouts = await getWorkoutsForUser();
-      const filteredWorkouts = availableWorkouts.filter((workout: { name: string; }) => workout.name === exercise);
+      const filteredWorkouts = 
+      availableWorkouts.filter((workout: { name: string; }) => workout.name === workoutName);
+
       setPreviousRecord(filteredWorkouts);
     };
-    getExerciseDetailsForWorkout(exercise);
+    getExerciseDetailsForWorkout(workoutId);
     fetchWorkouts();
-  }, [exercise]);
+  }, [workoutName]);
 
   const handleStartDateChange = (_event: any, selectedDate?: Date) => {
     setShowStartDatePicker(false);
@@ -59,7 +60,7 @@ const WorkoutInstances = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Registros do treino: {exercise}</Text>
+      <Text style={styles.title}>Registros do treino: {workoutName}</Text>
 
       <View style={styles.datePickerContainer}>
         <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartDatePicker(true)}>
@@ -101,7 +102,8 @@ const WorkoutInstances = () => {
           renderItem={({ item }) => (
             <View style={styles.recordItem}>
               <Text style={styles.recordText}>{formatDate(item.date)}</Text>
-              <TouchableOpacity style={styles.detailsButton} onPress={() => navigation.navigate('workoutDetails', { workoutName: item.name })}>
+              <TouchableOpacity style={styles.detailsButton} 
+              onPress={() => navigation.navigate('workoutDetails', { workoutId: item.id, workoutName: item.name })}>
                 <Text style={styles.detailsButtonText}>Ver detalhes</Text>
               </TouchableOpacity>
             </View>
