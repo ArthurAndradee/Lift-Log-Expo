@@ -104,7 +104,8 @@ const WorkoutInstances = () => {
             <View style={styles.recordItem}>
               <Text style={styles.recordText}>{formatDate(item.date)}</Text>
               <TouchableOpacity style={styles.detailsButton} 
-              onPress={() => navigation.navigate('workoutDetailsFilteredByDay', { workoutId: item.id, workoutName: item.name })}>
+                onPress={() => navigation.navigate('workoutDetailsFilteredByDay', { workoutId: item.id, workoutName: item.name })}
+              >
                 <Text style={styles.detailsButtonText}>Ver detalhes</Text>
               </TouchableOpacity>
             </View>

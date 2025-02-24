@@ -20,7 +20,6 @@ const WorkoutDetails = () => {
       try {
         const response = await getExerciseDetailsForWorkout(workoutId);
 
-        // Group exercises by ID
         const grouped = response.details.reduce((acc: Record<number, Exercise[]>, exercise: Exercise) => {
           if (!acc[exercise.id]) {
             acc[exercise.id] = [];

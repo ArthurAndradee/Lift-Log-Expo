@@ -158,8 +158,7 @@ export const getWorkoutsForUser = async () => {
     const response = await axios.get(`${API_BASE_URL}/api/workouts/workouts/${userId}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    //[{"date": "2025-02-21T21:20:22.000Z", "id": 7, "name": "Pirado"}, {"date": "2025-02-21T21:12:21.000Z", "id": 6, "name": "Pirado"}, {"date": "2025-02-17T20:57:44.000Z", "id": 1, "name": "Pira's"}]
-    console.log(response.data.workouts)
+    
     return (response.data.workouts);
   } catch (error) {
     console.error('Error fetching workouts:', error);

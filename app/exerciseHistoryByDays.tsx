@@ -1,26 +1,28 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList, Exercise } from '../constants/interfaces';
-import { deleteExercise } from '../constants/api-calls';
+import { getWorkoutsForUser } from '../constants/api-calls';
 import dayjs from 'dayjs';
 import React from 'react';
-import { getWorkoutsForUser } from '../constants/api-calls';  // Import your function
+import { useNavigation } from 'expo-router';
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 type ExerciseHistoryByDaysRouteProp = RouteProp<RootStackParamList, 'exerciseHistoryByDays'>;
 
 const ExerciseHistoryByDays = () => {
   const route = useRoute<ExerciseHistoryByDaysRouteProp>();
   const { date } = route.params;
   const [groupedWorkouts, setGroupedWorkouts] = useState<{ [key: string]: Exercise[] }>({});
-  const [allWorkouts, setAllWorkouts] = useState<Exercise[]>([]); // Store all workouts
+  const [allWorkouts, setAllWorkouts] = useState<Exercise[]>([]);
+  const navigation = useNavigation<HomeScreenNavigationProp>();
 
-  // Fetch workouts for the user
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
-        const workouts = await getWorkoutsForUser(); // Fetch workouts for the user
-        setAllWorkouts(workouts); // Set all workouts in the state
+        const workouts = await getWorkoutsForUser();
+        setAllWorkouts(workouts);
       } catch (error) {
         console.error('Error fetching workouts:', error);
       }
@@ -29,84 +31,84 @@ const ExerciseHistoryByDays = () => {
     fetchWorkouts();
   }, []);
 
-  // Group workouts by date and time
+  // Group workouts by time (HH:mm format) and filter by selected date
   useEffect(() => {
-    if (allWorkouts.length === 0) return; // Do nothing if there are no workouts
+    if (allWorkouts.length > 0) {
+      const filteredWorkouts = allWorkouts.filter(workout =>
+        dayjs(workout.date).format('YYYY-MM-DD') === dayjs(date).format('YYYY-MM-DD')
+      );
 
-    // Filter workouts by the selected date
-    const filtered = allWorkouts.filter(
-      (workout) => dayjs(workout.date).format('DD/MM/YYYY') === date
-    );
+      const groupedByTime: { [key: string]: Exercise[] } = {};
+      filteredWorkouts.forEach(workout => {
+        const timeKey = dayjs(workout.date).format('HH:mm');
+        if (!groupedByTime[timeKey]) {
+          groupedByTime[timeKey] = [];
+        }
+        groupedByTime[timeKey].push(workout);
+      });
 
-    // Group workouts by time (HH:mm format)
-    const grouped = filtered.reduce((acc, workout) => {
-      const formattedTime = dayjs(workout.date).format('HH:mm'); // Convert time to "HH:mm"
-      if (!acc[formattedTime]) {
-        acc[formattedTime] = [];
-      }
-      acc[formattedTime].push(workout);
-      return acc;
-    }, {} as { [key: string]: Exercise[] });
-
-    setGroupedWorkouts(grouped);
-  }, [allWorkouts, date]); // Re-run whenever allWorkouts or date changes
-
-  const handleDeleteExercise = async (workoutId: number) => {
-    const isDeleted = await deleteExercise(workoutId);
-    if (isDeleted) {
-      // Refresh workouts after deletion
-      setAllWorkouts((prevWorkouts) => prevWorkouts.filter((workout) => workout.id !== workoutId));
-    } else {
-      Alert.alert('Error', 'Failed to delete workout');
+      setGroupedWorkouts(groupedByTime);
     }
-  };
-
-  console.log(groupedWorkouts);
+  }, [allWorkouts, date]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Exercícios de {date}</Text>
+      <Text style={styles.header}>Exercícios de {dayjs(date).format('DD/MM/YYYY')}</Text>
       <FlatList
         data={Object.entries(groupedWorkouts)}
         keyExtractor={([time]) => time}
-        renderItem={({ item: [time, items] }) => (
-          <View style={styles.workoutGroup}>
-            <View style={styles.groupTitleContainer}>
-              <Text style={styles.groupTitle}>{items[0].exercise}</Text>
-              <Text style={styles.timeText}>{time}</Text>
-            </View>
-            {items.map((item) => (
-              <View key={`${item.name}-${item.setNumber}`} style={styles.workoutItem}>
-                <Text style={[styles.boldText, styles.itemFont]}>Set {item.setNumber} - </Text>
-                <Text style={styles.itemFont}>Peso: <Text style={styles.boldText}>{item.weight}kg</Text> | </Text>
-                <Text style={styles.itemFont}>Reps: {item.reps}</Text>
-              </View>
+        renderItem={({ item: [time, exercises] }) => (
+          <TouchableOpacity style={styles.workoutContainer} 
+          onPress={() => navigation.navigate('workoutDetailsFilteredByDay', { workoutId: exercises[0].id, workoutName: exercises[0].name })}
+          >
+            <Text style={styles.time}>{exercises[0].name}</Text>
+            {exercises.map((exercise) => (
+              <Text key={exercise.id} style={styles.exerciseText}>
+                {time}
+              </Text>
             ))}
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDeleteExercise(items[0].id)}
-            >
-              <Text style={styles.deleteButtonText}>Deletar Set</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         )}
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum exercício encontrado.</Text>}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  workoutGroup: { marginBottom: 15, padding: 10, backgroundColor: '#e0e0e0', borderRadius: 8 },
-  groupTitleContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
-  groupTitle: { fontSize: 16, fontWeight: 'bold' },
-  timeText: { fontSize: 16, fontWeight: 'bold', color: '#555' },
-  boldText: { fontWeight: 'bold' },
-  itemFont: { fontSize: 18 },
-  workoutItem: { padding: 10, backgroundColor: '#fff', borderRadius: 8, marginVertical: 5, elevation: 3, flexDirection: 'row', flexWrap: 'wrap' },
-  deleteButton: { backgroundColor: '#ff4d4d', paddingVertical: 8, borderRadius: 6, alignItems: 'center', marginTop: 10 },
-  deleteButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f4f4f4',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  workoutContainer: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    elevation: 3,
+  },
+  time: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 6,
+  },
+  exerciseText: {
+    fontSize: 14,
+    color: '#555',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 20,
+  },
 });
 
 export default ExerciseHistoryByDays;
