@@ -19,15 +19,31 @@ const RegisterExistingWorkout = () => {
   useEffect(() => {
     const loadExercises = async () => {
       const response = await getWorkoutsForUser();
-      
+    
       if (response) {
-        setWorkoutIds(response.map((workout: { id: number; }) => workout.id));
-        setAvailableWorkouts(response.map((workout: { name: string; }) => workout.name));
+        // Create a map to store the most recent workout for each unique name
+        const workoutMap = new Map();
+  
+        response.forEach((workout: { name: string; id: number; date: string }) => {
+          // If the workout name is not in the map or this one is more recent
+          if (!workoutMap.has(workout.name) || new Date(workout.date) > new Date(workoutMap.get(workout.name).date)) {
+            workoutMap.set(workout.name, workout);
+          }
+        });
+  
+        // Extract unique workouts from the map
+        const uniqueWorkouts = Array.from(workoutMap.values());
+        
+        // Set the workout IDs and names
+        setWorkoutIds(uniqueWorkouts.map((workout: { id: number }) => workout.id));
+        setAvailableWorkouts(uniqueWorkouts.map((workout: { name: string }) => workout.name));
       }
     };
-  
+    
     loadExercises();
   }, []);
+  
+  
 
   const addSetToExercise = (exerciseName: string) => {
     setWorkoutExercisesData((prevExercises) =>
